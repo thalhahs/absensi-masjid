@@ -1,42 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { User, CalendarDays, Clock, CheckCircle2, XCircle, Trophy } from 'lucide-react';
+import React from 'react';
+import { User, CalendarDays, Clock, CheckCircle2, XCircle, Trophy, LogOut } from 'lucide-react';
 
-export default function ProfileView({ history, officers, session }) {
-  const [myHistory, setMyHistory] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState({
-    HADIR: 0,
-    TERLAMBAT: 0,
-    ALFA: 0,
-    total: 0,
-    hadirRate: 0,
-  });
-
+export default function ProfileView({ history, session, onLogout }) {
   const officerName = session?.name || '';
   const officerRole = session?.role || 'officer';
 
-  useEffect(() => {
-    if (!officerName) return;
+  const myHistory = history.filter((item) => item.officer_name === officerName);
 
-    const filtered = history.filter((item) => item.officer_name === officerName);
-    setMyHistory(filtered);
-
-    const hadir = filtered.filter((item) => item.status === 'HADIR').length;
-    const terlambat = filtered.filter((item) => item.status === 'TERLAMBAT').length;
-    const alfa = filtered.filter((item) => item.status === 'ALFA').length;
-    const total = filtered.length;
-    const hadirRate = total > 0 ? Math.round((hadir / total) * 100) : 0;
-
-    setStats({
-      HADIR: hadir,
-      TERLAMBAT: terlambat,
-      ALFA: alfa,
-      total,
-      hadirRate,
-    });
-  }, [history, officerName]);
+  const hadir = myHistory.filter((item) => item.status === 'HADIR').length;
+  const terlambat = myHistory.filter((item) => item.status === 'TERLAMBAT').length;
+  const alfa = myHistory.filter((item) => item.status === 'ALFA').length;
+  const total = myHistory.length;
+  const hadirRate = total > 0 ? Math.round((hadir / total) * 100) : 0;
 
   const getBadgeStyles = (status) => {
     const styles = {
@@ -57,7 +34,7 @@ export default function ProfileView({ history, officers, session }) {
       <div className="space-y-4">
         {/* Officer Info Card */}
         <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-stone-100 dark:border-stone-700/50 rounded-2xl p-4">
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center gap-3 mb-1">
             <div className="bg-app-primary/10 dark:bg-app-primary/20 text-app-primary dark:text-app-primary-light p-2 rounded-xl">
               <User size={20} />
             </div>
@@ -70,6 +47,14 @@ export default function ProfileView({ history, officers, session }) {
               </p>
             </div>
           </div>
+
+          <button
+            onClick={onLogout}
+            className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-bold text-app-muted border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+          >
+            <LogOut size={14} />
+            Keluar
+          </button>
         </div>
 
         {/* Stats Grid */}
@@ -80,7 +65,7 @@ export default function ProfileView({ history, officers, session }) {
               Hadir
             </p>
             <p className="text-xl font-extrabold text-emerald-700 dark:text-emerald-300">
-              {stats.HADIR}
+              {hadir}
             </p>
           </div>
 
@@ -90,7 +75,7 @@ export default function ProfileView({ history, officers, session }) {
               Terlambat
             </p>
             <p className="text-xl font-extrabold text-amber-700 dark:text-amber-300">
-              {stats.TERLAMBAT}
+              {terlambat}
             </p>
           </div>
 
@@ -100,7 +85,7 @@ export default function ProfileView({ history, officers, session }) {
               Alfa
             </p>
             <p className="text-xl font-extrabold text-rose-700 dark:text-rose-300">
-              {stats.ALFA}
+              {alfa}
             </p>
           </div>
 
@@ -110,7 +95,7 @@ export default function ProfileView({ history, officers, session }) {
               Hadir Rate
             </p>
             <p className="text-xl font-extrabold text-app-text dark:text-slate-100">
-              {stats.hadirRate}%
+              {hadirRate}%
             </p>
           </div>
         </div>

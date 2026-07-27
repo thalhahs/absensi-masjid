@@ -71,26 +71,8 @@ export default function PinGate({ children }) {
     handlePinChange('');
   };
 
-  let session = null;
-  if (typeof window !== 'undefined') {
-    try {
-      const raw = window.localStorage.getItem('absensi_masjid_session');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed && parsed.expiresAt && Date.now() <= parsed.expiresAt) {
-          session = parsed;
-        } else {
-          window.localStorage.removeItem('absensi_masjid_session');
-        }
-      }
-    } catch {
-      try { window.localStorage.removeItem('absensi_masjid_session'); } catch {}
-    }
-  }
-
-  if (session) {
-    return children;
-  }
+  // Always show PIN gate - no auto-login from localStorage
+  // User must enter PIN every time they open the app
 
   const digits = pin.split('').map(() => '●').join('');
 
