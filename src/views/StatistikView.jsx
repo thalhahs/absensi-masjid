@@ -3,6 +3,8 @@
 import React from 'react';
 import { BarChart3, User } from 'lucide-react';
 
+const SKELETON_STATISTIK = [1, 2, 3];
+
 export default function StatistikView({
   statsData,
   statsLoading,
@@ -11,7 +13,7 @@ export default function StatistikView({
     return (
       <main className="flex-1 glass-strong rounded-3xl shadow-sm p-4 overflow-auto border border-stone-200/80 dark:border-stone-700/60">
         <div className="space-y-2.5">
-          {[1, 2, 3].map((s) => (
+          {SKELETON_STATISTIK.map((s) => (
             <div key={s} className="rounded-2xl border border-stone-100 dark:border-stone-700/50 overflow-hidden">
               <div className="p-3.5 space-y-3">
                 <div className="flex items-center gap-3">

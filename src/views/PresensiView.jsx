@@ -251,6 +251,7 @@ export default function PresensiView({
                 iconColor: "text-amber-600 dark:text-amber-400",
                 avatarText: "text-amber-700 dark:text-amber-300",
                 border: "border-l-amber-400 dark:border-l-amber-500",
+                borderLeft: "amber",
                 badge: "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/60",
               },
               Muadzin: {
@@ -259,6 +260,7 @@ export default function PresensiView({
                 iconColor: "text-cyan-600 dark:text-cyan-400",
                 avatarText: "text-cyan-700 dark:text-cyan-300",
                 border: "border-l-cyan-400 dark:border-l-cyan-500",
+                borderLeft: "cyan",
                 badge: "bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800/60",
               },
               "Badal Imam": {
@@ -267,6 +269,7 @@ export default function PresensiView({
                 iconColor: "text-emerald-600 dark:text-emerald-400",
                 avatarText: "text-emerald-700 dark:text-emerald-300",
                 border: "border-l-emerald-400 dark:border-l-emerald-500",
+                borderLeft: "emerald",
                 badge: "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60",
               },
             };

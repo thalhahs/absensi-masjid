@@ -3,6 +3,8 @@
 import React from 'react';
 import { History, Download, CalendarDays } from 'lucide-react';
 
+const SKELETON_RIWAYAT = [1, 2, 3];
+
 export default function RiwayatView({
   history,
   historyLoading,
@@ -93,7 +95,7 @@ export default function RiwayatView({
 
       {historyLoading ? (
         <div className="space-y-2.5">
-          {[1,2,3].map((s) => (
+          {SKELETON_RIWAYAT.map((s) => (
             <div key={s} className="rounded-2xl border border-stone-100 dark:border-stone-700/50 overflow-hidden">
               <div className="p-3.5 space-y-2">
                 <div className="flex items-center gap-3">

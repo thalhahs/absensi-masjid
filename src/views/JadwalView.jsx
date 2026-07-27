@@ -3,6 +3,8 @@
 import React from 'react';
 import { CalendarDays, ChevronUp, ChevronDown, Save, X, Pencil, Trash2 } from 'lucide-react';
 
+const SKELETON_JADWAL = [1, 2];
+
 export default function JadwalView({
   allAssignments,
   allAssignmentsLoading,
@@ -384,7 +386,7 @@ export default function JadwalView({
 
       {allAssignmentsLoading ? (
         <div className="space-y-2.5">
-          {[1,2].map((s) => (
+          {SKELETON_JADWAL.map((s) => (
             <div key={s} className="rounded-2xl border border-stone-100 dark:border-stone-700/50 overflow-hidden">
               <div className="skeleton h-14 w-full" />
               <div className="p-3 space-y-2">
