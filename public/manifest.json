@@ -1,0 +1,23 @@
+{
+  "name": "Absensi Petugas Masjid",
+  "short_name": "Absensi Masjid",
+  "description": "Sistem Presensi Petugas Masjid Modern",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7D5A41",
+  "icons": [
+    {
+      "src": "/logomasjid.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logomasjidputih.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
