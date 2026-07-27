@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { parseTimeToMinutes, getDateMinutes } from '@/lib/attendance';
-import { Bell, X, Timer, QrCode, Crown, Shield, Check } from 'lucide-react';
+import { Bell, X, Timer, QrCode, Crown, Shield, Check, User } from 'lucide-react';
 import QrCodeModal from '@/components/QrCodeModal';
 
 function getIqomahCountdown(adzanTime, prayerId, now) {
@@ -262,77 +262,54 @@ export default function PresensiView({
         </div>
       )}
       {/* PILIH SHALAT */}
-      <div
-        className="
-        grid
-        grid-cols-5
-        gap-2
-        bg-white/60
-        dark:bg-slate-700/60
-        backdrop-blur-md
-        p-2
-        rounded-3xl
-        my-3
-        border
-        border-purple-100
-        dark:border-slate-600
-        shadow-sm
-      "
-      >
-      {schedules.map((s, index) => (
-        <button
-          key={s.id}
-
-          onClick={() => setSelectedPrayer(s.id)}
-
-          className={`
-        rounded-2xl
-        py-3
-        text-xs
-        font-bold
-        transition-all
-        duration-300
-        
-  ${
-    selectedPrayer === s.id
-      ? "bg-gradient-to-br from-[#7D5A41] to-[#D3AF96] text-white shadow-lg scale-[1.03] dark:shadow-none dark:border dark:border-white/10"
-      : "text-app-muted hover:bg-white hover:shadow-md hover:scale-[1.01] dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:shadow-none"
-  }
-        
-        `}
-        >
-          <div className="text-sm">{s.name}</div>
-
-          <div
-            className="
-            font-mono
-            text-[11px]
-            font-bold
-            mt-0.5
-          "
-          >
-            {s.time}
-          </div>
-        </button>
-      ))}
-    </div>
+      <div className="my-3">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {schedules.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setSelectedPrayer(s.id)}
+              className={`
+                flex-shrink-0
+                px-4
+                py-2.5
+                rounded-2xl
+                text-xs
+                font-bold
+                transition-all
+                duration-300
+                border
+                ${
+                  selectedPrayer === s.id
+                    ? "gradient-brown text-white shadow-md scale-[1.02] border-transparent"
+                    : "bg-white/80 dark:bg-slate-800/80 text-app-muted border-stone-200 dark:border-slate-700 hover:shadow-sm"
+                }
+              `}
+            >
+              <div className="text-sm font-semibold">{s.name}</div>
+              <div className="font-mono text-[11px] font-bold mt-0.5 opacity-80">
+                {s.time}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
       {/* LIST PETUGAS */}
       <main
         className="
         flex-1
-        bg-white/70 dark:bg-slate-800/70
-        backdrop-blur-md
+        glass-strong
         rounded-3xl
         shadow-sm
-        p-3
+        p-4
         overflow-auto
         border
-        border-purple-100 dark:border-slate-700
+        border-stone-200/80
+        dark:border-stone-700/60
       "
       >
         <div
           className="
-            space-y-2
+            space-y-3
           "
         >
           {sortedOfficers.map((officer) =>
@@ -377,80 +354,57 @@ export default function PresensiView({
             flex
             items-center
             justify-between
-            bg-white/90 dark:bg-slate-800/90
-            backdrop-blur-md
-            rounded-3xl
-            p-3
-            border
-            shadow-lg
-            hover:shadow-xl
-            transition-all
-            duration-300
-            active:scale-[0.97]
+            card-base
+            p-4
             border-l-4
             ${roleStyle.border}
+            animate-fade-in
+            active:scale-[0.98]
           `
                   }
                 >
-                  <div
-                    className="
-              flex
-              items-center
-              gap-3
-            "
-                  >
+                  <div className="flex items-center gap-3">
+                    {/* Avatar with initials */}
                     <div
                       className={`
-                bg-gradient-to-br ${roleStyle.gradient}
-                ${roleStyle.iconColor}
-                p-2.5
+                w-11 h-11
                 rounded-2xl
-                shadow-md
-                animate-wiggle
-                hover:animate-none
-              `
-                      }
+                flex
+                items-center
+                justify-center
+                text-sm
+                font-bold
+                shadow-sm
+                ${roleStyle.iconColor}
+                bg-gradient-to-br ${roleStyle.gradient}
+              `}
                     >
-                      <RoleIcon size={22} />
+                      {officer.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                     </div>
 
                     <div>
-                      <p
-                        className="
-                  font-extrabold
-                  text-sm
-                  text-app-text
-                  tracking-tight
-                "
-                      >
+                      <p className="font-bold text-sm text-app-text tracking-tight leading-tight">
                         {officer.name}
                       </p>
 
-                      <p
+                      <span
                         className={`
-                  text-[11px]
-                  font-extrabold
+                  text-[10px]
+                  font-bold
                   px-2
                   py-0.5
                   rounded-full
                   inline-block
-                  mt-0.5
+                  mt-1
                   ${roleStyle.badge}
-                `
-                      }
+                  border
+                `}
                       >
                         {meta.roleTitle}
-                      </p>
+                      </span>
 
                       {meta.scanRole && (
-                        <p
-                          className="
-                      text-[10px]
-                      text-app-muted
-                      font-medium
-                      mt-0.5
-                    "
-                        >
+                        <p className="text-[10px] text-app-muted font-medium mt-1">
                           {meta.windowLabel}
                         </p>
                       )}

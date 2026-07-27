@@ -56,13 +56,14 @@ export default function JadwalView({
     <main
       className="
         flex-1
-        bg-white dark:bg-slate-800
-        rounded-2xl
+        glass-strong
+        rounded-3xl
         shadow-sm
-        p-3
+        p-4
         overflow-auto
         border
-        border-app-border dark:border-slate-700
+        border-stone-200/80
+        dark:border-stone-700/60
       "
     >
       <div
@@ -407,13 +408,10 @@ export default function JadwalView({
               <div
                 key={date}
                 className="
-                  bg-white dark:bg-slate-800
-                  border
-                  border-app-border dark:border-slate-700
-                  rounded-2xl
-                  shadow-sm
+                  card-base
                   overflow-hidden
                   transition-all
+                  duration-300
                 "
               >
                 <button
@@ -423,11 +421,12 @@ export default function JadwalView({
                     flex
                     items-center
                     justify-between
-                    px-3
-                    py-2.5
-                    bg-slate-50/60 dark:bg-slate-700/60
-                    hover:bg-slate-50 dark:hover:bg-slate-700
+                    px-4
+                    py-3
+                    hover:bg-stone-50/80
+                    dark:hover:bg-stone-800/60
                     transition-colors
+                    rounded-t-2xl
                   "
                 >
                   <span className="text-xs font-bold text-app-text dark:text-slate-100">

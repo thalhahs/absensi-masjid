@@ -1400,7 +1400,7 @@ export default function MosqueApp() {
       {showConfetti && (
         <div className="confetti">
           {[...Array(20)].map((_, i) => {
-            const colors = ['#8b5cf6', '#06b6d4', '#f472b6', '#f59e0b', '#10b981'];
+            const colors = ['#8B5A2B', '#D3AF96', '#C9A96E', '#5B8C5A', '#A68B5B'];
             return (
               <div
                 key={i}
