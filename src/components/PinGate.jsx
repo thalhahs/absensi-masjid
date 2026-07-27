@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Lock, Shield } from 'lucide-react';
 import { setSession, getSession, clearSession } from '@/lib/session';
 
@@ -10,7 +10,8 @@ export default function PinGate({ children }) {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const loginAttemptedRef = useRef(false);
 
   useEffect(() => {
     const session = getSession();
@@ -18,6 +19,13 @@ export default function PinGate({ children }) {
       clearSession();
     }
   }, []);
+  useEffect(() => {
+    return () => {
+      loginAttemptedRef.current = false;
+    };
+  }, []);
+
+
 
   const handlePinChange = useCallback((value) => {
     const cleaned = value.replace(/[^0-9]/g, '').slice(0, PIN_LENGTH);
@@ -31,8 +39,16 @@ export default function PinGate({ children }) {
       return;
     }
 
+    loginAttemptedRef.current = true;
     setLoading(true);
     setError('');
+
+    const safetyTimeout = setTimeout(() => {
+      if (loginAttemptedRef.current) {
+        setLoading(false);
+        setError('Permintaan timeout. Cek koneksi dan coba lagi.');
+      }
+    }, 12000);
 
     try {
       const controller = new AbortController();
@@ -47,30 +63,42 @@ export default function PinGate({ children }) {
 
       clearTimeout(timeoutId);
 
-      const data = await res.json();
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (jsonError) {
+        console.error('PIN login JSON parse error:', jsonError);
+        setError('Respons server tidak valid');
+        setLoading(false);
+        clearTimeout(safetyTimeout);
+        return;
+      }
+
       console.log('PIN login response:', data);
 
-      if (!res.ok || !data.success) {
-        setError(data.message || 'PIN salah');
+      if (!res.ok || !data?.success) {
+        setError(data?.message || 'PIN salah');
         setLoading(false);
+        clearTimeout(safetyTimeout);
         return;
       }
 
       setSession(data.session);
       setPin('');
+      setIsAuthenticated(true);
       setLoading(false);
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 100);
+      clearTimeout(safetyTimeout);
     } catch (err) {
       console.error('Login error:', err);
       setError(err.name === 'AbortError' ? 'Permintaan timeout' : 'Gagal terhubung ke server');
       setLoading(false);
+      clearTimeout(safetyTimeout);
     }
   }, [pin]);
 
   useEffect(() => {
-    if (pin.length === PIN_LENGTH) {
+    if (pin.length === PIN_LENGTH && !loginAttemptedRef.current) {
+      loginAttemptedRef.current = true;
       login();
     }
   }, [pin, login]);
@@ -83,8 +111,9 @@ export default function PinGate({ children }) {
     handlePinChange('');
   };
 
-  // Always show PIN gate - no auto-login from localStorage
-  // User must enter PIN every time they open the app
+  if (isAuthenticated) {
+    return children;
+  }
 
   const digits = pin.split('').map(() => '●').join('');
 
