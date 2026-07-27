@@ -18,56 +18,18 @@ export default function PetugasView({
   deleteOfficer,
 }) {
   return (
-    <main
-      className="
-        flex-1
-        bg-white dark:bg-slate-800
-        rounded-2xl
-        shadow-sm
-        p-4
-        overflow-auto
-        border
-        border-app-border dark:border-slate-700
-      "
-    >
-      <h2
-        className="
-          text-xs
-          font-bold
-          uppercase
-          mb-4
-          text-app-text dark:text-slate-100
-        "
-      >
-        <UserPlus size={14} className="inline mr-1 mb-0.5" />
+    <main className="flex-1 glass-strong rounded-3xl shadow-sm p-4 overflow-auto border border-stone-200/80 dark:border-stone-700/60">
+      <h2 className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight mb-5">
+        <UserPlus size={16} className="inline mr-1.5 mb-0.5 text-app-primary" />
         Tambah Petugas
       </h2>
 
-      <div
-        className="
-          max-w-md
-          mx-auto
-        "
-      >
-        <label
-          className="
-            text-xs
-            text-app-muted dark:text-slate-400
-            font-bold
-            uppercase
-            tracking-wide
-          "
-        >
+      <div className="max-w-md mx-auto">
+        <label className="block text-[10px] font-bold text-app-muted uppercase tracking-wider mb-1.5">
           Nama Petugas
         </label>
 
-        <div
-          className="
-            mt-2
-            flex
-            gap-2
-          "
-        >
+        <div className="mt-1.5 flex gap-2">
           <input
             type="text"
             placeholder="Contoh: Ustadz Ahmad"
@@ -78,58 +40,20 @@ export default function PetugasView({
                 addOfficer();
               }
             }}
-            className="
-              flex-1
-              text-sm
-              border
-              border-app-border
-              rounded-xl
-              px-3
-              py-2
-              bg-white dark:bg-slate-700 dark:text-slate-100
-              focus:outline-none
-              focus:ring-2
-              focus:ring-app-primary/30
-            "
+            className="flex-1 text-xs border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 bg-white/80 dark:bg-slate-800/80 text-app-text font-medium focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all"
           />
 
           <button
             onClick={addOfficer}
             disabled={addingOfficer}
-            className="
-              bg-app-primary
-              text-white
-              px-5
-              py-2
-              rounded-xl
-              text-sm
-              font-bold
-              disabled:opacity-50
-              disabled:cursor-not-allowed
-              shadow-md
-              shadow-emerald-200
-              hover:bg-app-primary-dark
-              hover:shadow-lg
-              hover:shadow-emerald-200
-              active:scale-95
-              transition-all
-            "
+            className="gradient-brown text-white px-5 py-2.5 rounded-xl text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg active:scale-95 transition-all"
           >
             {addingOfficer ? "Menyimpan..." : "Tambah"}
           </button>
         </div>
 
-        <div className="mt-6">
-          <h3
-            className="
-              text-xs
-              font-bold
-              text-app-muted dark:text-slate-400
-              uppercase
-              tracking-wide
-              mb-3
-            "
-          >
+        <div className="mt-5">
+          <h3 className="text-[10px] font-bold text-app-muted uppercase tracking-wider mb-2.5">
             Daftar Petugas Aktif ({officers.length})
           </h3>
 
@@ -137,20 +61,7 @@ export default function PetugasView({
             {officers.map((officer) => (
               <div
                 key={officer.id}
-                className="
-                  flex
-                  items-center
-                  justify-between
-                  bg-white dark:bg-slate-800/90
-                  border
-                  border-app-border dark:border-slate-700
-                  rounded-xl
-                  px-3
-                  py-2.5
-                  shadow-sm
-                  hover:shadow-md
-                  transition-all
-                "
+                className="group flex items-center justify-between px-3 py-2.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-stone-100 dark:border-stone-700/50 rounded-2xl hover:bg-stone-50/80 dark:hover:bg-stone-800/80 transition-all duration-200"
               >
                 {editingOfficerId === officer.id ? (
                   <div className="flex-1 flex items-center gap-2">
@@ -166,46 +77,19 @@ export default function PetugasView({
                         }
                       }}
                       autoFocus
-                      className="
-                        flex-1
-                        text-sm
-                        border
-                        border-app-border
-                        rounded-lg
-                        px-2
-                        py-1
-                        bg-white dark:bg-slate-700 dark:text-slate-100
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-app-primary/30
-                      "
+                      className="flex-1 text-xs border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 bg-white/80 dark:bg-slate-800/80 text-app-text font-medium focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all"
                     />
 
                     <button
                       onClick={() => saveOfficerEdit(officer.id)}
-                      className="
-                        p-1.5
-                        rounded-lg
-                        text-app-primary
-                        hover:bg-app-primary/10
-                        dark:hover:bg-app-primary/20
-                        transition-colors
-                      "
+                      className="p-1.5 rounded-lg text-app-primary hover:bg-app-primary/10 dark:hover:bg-app-primary/20 transition-colors"
                     >
                       <Save size={14} />
                     </button>
 
                     <button
                       onClick={cancelEditOfficer}
-                      className="
-                        p-1.5
-                        rounded-lg
-                        text-app-muted
-                        hover:bg-slate-100
-                        dark:hover:bg-slate-700
-                        dark:text-slate-300
-                        transition-colors
-                      "
+                      className="p-1.5 rounded-lg text-app-muted hover:bg-stone-100 dark:hover:bg-stone-700 dark:text-slate-300 transition-colors"
                     >
                       <X size={14} />
                     </button>
@@ -213,20 +97,11 @@ export default function PetugasView({
                 ) : (
                   <>
                     <div className="flex items-center gap-2">
-                      <div
-                        className="
-                          bg-emerald-100
-                          text-emerald-700
-                          p-1.5
-                          rounded-lg
-                          dark:bg-emerald-900/40
-                          dark:text-emerald-300
-                        "
-                      >
+                      <div className="bg-white dark:bg-slate-700 text-app-muted dark:text-slate-400 p-1.5 rounded-lg border border-stone-200 dark:border-stone-700">
                         <User size={14} />
                       </div>
 
-                      <span className="text-sm font-bold text-app-text dark:text-slate-100">
+                      <span className="text-sm font-bold text-app-text dark:text-slate-100 tracking-tight">
                         {officer.name}
                       </span>
                     </div>
@@ -234,14 +109,7 @@ export default function PetugasView({
                     <div className="flex items-center gap-1 ml-2">
                       <button
                         onClick={() => startEditOfficer(officer)}
-                        className="
-                          p-1.5
-                          rounded-lg
-                          text-app-primary
-                          hover:bg-app-primary/10
-                          dark:hover:bg-app-primary/20
-                          transition-colors
-                        "
+                        className="p-1.5 rounded-lg text-app-primary hover:bg-app-primary/10 dark:hover:bg-app-primary/20 transition-colors"
                         title="Edit nama"
                       >
                         <Pencil size={14} />
@@ -253,14 +121,7 @@ export default function PetugasView({
                             deleteOfficer(officer.id, officer.name);
                           }
                         }}
-                        className="
-                          p-1.5
-                          rounded-lg
-                          text-app-error
-                          hover:bg-rose-50
-                          dark:hover:bg-rose-900/40
-                          transition-colors
-                        "
+                        className="p-1.5 rounded-lg text-app-error hover:bg-rose-50 dark:hover:bg-rose-900/40 transition-colors"
                         title="Hapus"
                       >
                         <Trash2 size={14} />
@@ -278,8 +139,8 @@ export default function PetugasView({
                     border
                     ${
                       officer.active
-                        ? "bg-app-primary/10 text-app-primary border-app-border dark:bg-app-primary/20 dark:text-app-primary-light dark:border-slate-600"
-                        : "bg-slate-100 text-app-muted border-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600"
+                        ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+                        : "bg-slate-100 dark:bg-slate-700 text-app-muted dark:text-slate-400 border-slate-200 dark:border-slate-600"
                     }
                   `}
                 >
