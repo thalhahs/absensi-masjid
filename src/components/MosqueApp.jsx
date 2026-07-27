@@ -1533,8 +1533,9 @@ export default function MosqueApp() {
           />
         )}
 
-        {currentView === "statistik" && <StatistikView statsData={statsData} statsLoading={statsLoading} role={currentRole} isSuperadmin={isSuperadmin} />}
-      </div>
+{currentView === "statistik" && <StatistikView statsData={statsData} statsLoading={statsLoading} role={currentRole} isSuperadmin={isSuperadmin} />}
+         {currentView === "profile" && <ProfileView history={history} officers={officers} session={session} setHistoryFilterDate={setHistoryFilterDate} setHistoryFilterOfficer={setHistoryFilterOfficer} exportHistoryCSV={exportHistoryCSV} />}
+       </div>
 
       {/* TAB NAVIGASI */}
 
