@@ -206,14 +206,15 @@ export default function PresensiView({
 
       {/* PILIH SHALAT */}
       <div className="my-3">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex flex-wrap sm:flex-nowrap gap-2">
           {schedules.map((s) => (
             <button
               key={s.id}
               onClick={() => setSelectedPrayer(s.id)}
               className={`
-                flex-shrink-0
-                px-5
+                flex-1
+                min-w-0
+                px-3 sm:px-5
                 py-3
                 rounded-2xl
                 text-xs

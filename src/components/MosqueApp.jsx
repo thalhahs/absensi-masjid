@@ -1646,7 +1646,7 @@ export default function MosqueApp() {
   duration-300
   
   ${
-    currentView === "presensi"
+    currentView === "riwayat"
       ? "bg-gradient-to-r from-[#7D5A41] to-[#D3AF96] text-white shadow-md scale-[1.02]"
       : "text-app-muted hover:bg-white hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:shadow-none"
   }
@@ -1674,7 +1674,7 @@ export default function MosqueApp() {
   duration-300
   
   ${
-    currentView === "presensi"
+    currentView === "jadwal"
       ? "bg-gradient-to-r from-[#7D5A41] to-[#D3AF96] text-white shadow-md scale-[1.02]"
       : "text-app-muted hover:bg-white hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:shadow-none"
   }
@@ -1702,7 +1702,7 @@ export default function MosqueApp() {
   duration-300
   
   ${
-    currentView === "presensi"
+    currentView === "statistik"
       ? "bg-gradient-to-r from-[#7D5A41] to-[#D3AF96] text-white shadow-md scale-[1.02]"
       : "text-app-muted hover:bg-white hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:shadow-none"
   }
@@ -1730,7 +1730,7 @@ export default function MosqueApp() {
   duration-300
   
   ${
-    currentView === "presensi"
+    currentView === "petugas"
       ? "bg-gradient-to-r from-[#7D5A41] to-[#D3AF96] text-white shadow-md scale-[1.02]"
       : "text-app-muted hover:bg-white hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:shadow-none"
   }
