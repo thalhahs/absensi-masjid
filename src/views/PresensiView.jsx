@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getSession } from '@/lib/session';
 import { parseTimeToMinutes, getDateMinutes } from '@/lib/attendance';
 import { Bell, X, Timer, QrCode, Crown, Shield, Check, User } from 'lucide-react';
 import QrCodeModal from '@/components/QrCodeModal';
@@ -49,8 +48,8 @@ export default function PresensiView({
   role,
   isSuperadmin,
   showError,
+  session,
 }) {
-  const session = getSession();
   const [prayerQr, setPrayerQr] = useState({
     isActive: false,
     token: '',

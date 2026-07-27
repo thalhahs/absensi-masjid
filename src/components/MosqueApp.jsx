@@ -152,6 +152,7 @@ import PresensiView from "@/views/PresensiView";
 import RiwayatView from "@/views/RiwayatView";
 import JadwalView from "@/views/JadwalView";
 import StatistikView from "@/views/StatistikView";
+import ProfileView from "@/views/ProfileView";
 
 export default function MosqueApp() {
   const [currentTime, setCurrentTime] = useState(null);
@@ -229,12 +230,24 @@ export default function MosqueApp() {
 
   const [statsLoading, setStatsLoading] = useState(false);
 
-  const session = getSession();
+  const [session, setSession] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = window.localStorage.getItem('absensi_masjid_session');
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !parsed.expiresAt || Date.now() > parsed.expiresAt) {
+        window.localStorage.removeItem('absensi_masjid_session');
+        return null;
+      }
+      return parsed;
+    } catch {
+      return null;
+    }
+  });
+
   const currentRole = session?.role || 'superadmin';
   const isSuperadmin = currentRole === 'superadmin';
-
-  const [activeQrOfficer, setActiveQrOfficer] = useState(null);
-  const [scannedOfficers, setScannedOfficers] = useState(new Set());
 
   const fetchedDateRef = useRef(null);
 
@@ -1214,7 +1227,7 @@ export default function MosqueApp() {
   // ===============================
 
   useEffect(() => {
-    if (currentView === "riwayat") {
+    if (currentView === "riwayat" || currentView === "profile") {
       fetchHistory();
     }
   }, [currentView, fetchHistory]);
@@ -1496,7 +1509,7 @@ export default function MosqueApp() {
       {/* KONTEN */}
 
       <div className="flex-1 overflow-auto mt-3">
-        {currentView === "presensi" && <PresensiView sortedOfficers={sortedOfficers} schedules={schedules} selectedPrayer={selectedPrayer} setSelectedPrayer={setSelectedPrayer} currentSchedule={currentSchedule} currentTime={currentTime} reminderNotification={reminderNotification} isReminderMuted={isReminderMuted} setReminderNotification={setReminderNotification} setIsReminderMuted={setIsReminderMuted} getOfficerMeta={getOfficerMeta} generateQrCode={generateQrCode} qrSuccessNotification={qrSuccessNotification} setQrSuccessNotification={setQrSuccessNotification} suppressReminders={suppressReminders} showError={showError} />}
+        {currentView === "presensi" && <PresensiView sortedOfficers={sortedOfficers} schedules={schedules} selectedPrayer={selectedPrayer} setSelectedPrayer={setSelectedPrayer} currentSchedule={currentSchedule} currentTime={currentTime} reminderNotification={reminderNotification} isReminderMuted={isReminderMuted} setReminderNotification={setReminderNotification} setIsReminderMuted={setIsReminderMuted} getOfficerMeta={getOfficerMeta} generateQrCode={generateQrCode} qrSuccessNotification={qrSuccessNotification} setQrSuccessNotification={setQrSuccessNotification} suppressReminders={suppressReminders} showError={showError} session={session} />}
 
         {currentView === "riwayat" && <RiwayatView history={history} historyLoading={historyLoading} historyFilterDate={historyFilterDate} historyFilterOfficer={historyFilterOfficer} officers={officers} setHistoryFilterDate={setHistoryFilterDate} setHistoryFilterOfficer={setHistoryFilterOfficer} exportHistoryCSV={exportHistoryCSV} />}
 

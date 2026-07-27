@@ -71,9 +71,24 @@ export default function PinGate({ children }) {
     handlePinChange('');
   };
 
-  const session = getSession();
+  let session = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = window.localStorage.getItem('absensi_masjid_session');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.expiresAt && Date.now() <= parsed.expiresAt) {
+          session = parsed;
+        } else {
+          window.localStorage.removeItem('absensi_masjid_session');
+        }
+      }
+    } catch {
+      try { window.localStorage.removeItem('absensi_masjid_session'); } catch {}
+    }
+  }
 
-  if (session && session.expiresAt && Date.now() <= session.expiresAt) {
+  if (session) {
     return children;
   }
 

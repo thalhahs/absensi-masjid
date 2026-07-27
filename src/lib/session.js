@@ -12,12 +12,12 @@ function readStoredSession() {
     }
     const session = JSON.parse(raw);
     if (!session || !session.expiresAt || Date.now() > session.expiresAt) {
-      window.localStorage.removeItem(SESSION_KEY);
+      try { window.localStorage.removeItem(SESSION_KEY); } catch {}
       return null;
     }
     return session;
   } catch {
-    window.localStorage.removeItem(SESSION_KEY);
+    try { window.localStorage.removeItem(SESSION_KEY); } catch {}
     return null;
   }
 }
