@@ -68,7 +68,7 @@ export async function POST(request) {
       );
     }
 
-    const expiresAt = new Date(Date.now() + SESSION_TTL_MS).toISOString();
+    const expiresAt = Date.now() + SESSION_TTL_MS;
 
     const sessionPayload = {
       officerId: matchedOfficer.id,

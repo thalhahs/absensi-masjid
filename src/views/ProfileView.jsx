@@ -1,11 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, CalendarDays, Clock, CheckCircle2, XCircle, Trophy, LogOut } from 'lucide-react';
 
 export default function ProfileView({ history, session, onLogout }) {
   const officerName = session?.name || '';
   const officerRole = session?.role || 'officer';
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!session?.expiresAt) return;
+
+    const updateCountdown = () => {
+      const remaining = session.expiresAt - Date.now();
+      if (remaining <= 0) {
+        setTimeLeft('Session expired');
+        return;
+      }
+      const hours = Math.floor(remaining / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      setTimeLeft(`Session expires in ${hours}h ${minutes}m`);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000);
+    return () => clearInterval(interval);
+  }, [session?.expiresAt]);
 
   const myHistory = history.filter((item) => item.officer_name === officerName);
 
@@ -47,6 +67,11 @@ export default function ProfileView({ history, session, onLogout }) {
               </p>
             </div>
           </div>
+          {timeLeft && (
+            <p className="text-[10px] text-app-muted mt-2">
+              {timeLeft}
+            </p>
+          )}
 
           <button
             onClick={onLogout}
