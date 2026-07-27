@@ -75,7 +75,6 @@ export default function PresensiView({
   const [scannedTokens, setScannedTokens] = useState(new Set());
   const [scanError, setScanError] = useState('');
 
-  // Poll QR token status to detect scans from other devices
   useEffect(() => {
     if (!qrModal.token || !qrModal.isOpen) return;
 
@@ -113,154 +112,98 @@ export default function PresensiView({
 
   return (
     <>
+      {/* QR Success Notification */}
       {qrSuccessNotification && (
-        <div
-          className="
-            rounded-3xl
-            p-4
-            shadow-lg
-            flex
-            items-start
-            justify-between
-            shrink-0
-            gap-3
-            border
-            border-emerald-200
-            bg-emerald-50
-            dark:bg-emerald-900/40
-            dark:border-emerald-600
-            animate-bounce-in
-            mt-2
-            mb-3
-          "
-        >
-          <div className="flex items-start gap-3">
-            <div className="bg-emerald-100 dark:bg-emerald-800 p-2 rounded-xl mt-0.5">
-              <Check size={22} className="text-emerald-600 dark:text-emerald-300" />
-            </div>
-            <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-200">
-                Absensi Berhasil
-              </p>
-              <p className="text-xs font-bold mt-0.5 text-emerald-900 dark:text-emerald-100">
-                {qrSuccessNotification.officerName} - {qrSuccessNotification.role}
-              </p>
-              <p className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300 mt-0.5">
-                {qrSuccessNotification.prayer} - {qrSuccessNotification.prayerTime} WIB
-              </p>
-            </div>
+        <div className="relative overflow-hidden rounded-3xl p-4 shadow-lg flex items-start gap-3 shrink-0 border border-stone-200 dark:border-stone-700 bg-white dark:bg-slate-800 mt-2 mb-3 animate-bounce-in">
+          <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-100 to-green-100 dark:from-emerald-900/50 dark:to-green-900/50 text-emerald-600 dark:text-emerald-400 shrink-0">
+            <Check size={20} className="stroke-[2.5]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-extrabold uppercase tracking-wider text-app-muted mb-0.5">
+              Absensi Berhasil
+            </p>
+            <p className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight">
+              {qrSuccessNotification.officerName} - {qrSuccessNotification.role}
+            </p>
+            <p className="text-[11px] font-medium text-app-muted mt-0.5">
+              {qrSuccessNotification.prayer} - {qrSuccessNotification.prayerTime} WIB
+            </p>
           </div>
         </div>
       )}
+
+      {/* Reminder Notification */}
       {reminderNotification && (
-        <div
-          className={`
-            rounded-3xl
-            p-4
-            shadow-lg
-            flex
-            items-start
-            justify-between
-            shrink-0
-            gap-3
-            border
-            animate-bounce-in
-            mt-2
-            mb-3
-            
-            "bg-rose-200 text-rose-900 border-rose-300 dark:bg-rose-900 dark:text-rose-100 dark:border-rose-600"
-          `
-          }
-        >
-          <div className="flex items-start gap-3">
-            <div className="bg-white/40 p-2 rounded-xl mt-0.5">
-              <Bell size={22} />
-            </div>
-            <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-wider opacity-90">
-                Adzan {reminderNotification.prayerName} dalam {reminderNotification.timeUntil} menit
-              </p>
-              <p className="text-xs font-bold mt-0.5 opacity-90">
-                {reminderNotification.prayerTime} WIB
-              </p>
-              <div className="text-[11px] font-medium opacity-90 mt-1 space-y-0.5">
+        <div className="relative overflow-hidden rounded-3xl p-4 shadow-sm flex items-start gap-3 shrink-0 border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-slate-800/80 mt-2 mb-3 animate-bounce-in">
+          <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-white dark:bg-slate-700 text-app-primary border border-stone-200 dark:border-stone-600 shrink-0">
+            <Bell size={20} className="stroke-[2.5]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-extrabold uppercase tracking-wider text-app-muted mb-0.5">
+              Adzan {reminderNotification.prayerName} dalam {reminderNotification.timeUntil} menit
+            </p>
+            <p className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight">
+              {reminderNotification.prayerTime} WIB
+            </p>
+            {(reminderNotification.imam || reminderNotification.muadzin || reminderNotification.badal) && (
+              <div className="text-[11px] font-medium text-app-muted mt-1 space-y-0.5">
                 {reminderNotification.imam && (
-                  <p>Imam: {reminderNotification.imam}</p>
+                  <p>Imam: <span className="text-app-text dark:text-slate-300 font-bold">{reminderNotification.imam}</span></p>
                 )}
                 {reminderNotification.muadzin && (
-                  <p>Muadzin: {reminderNotification.muadzin}</p>
+                  <p>Muadzin: <span className="text-app-text dark:text-slate-300 font-bold">{reminderNotification.muadzin}</span></p>
                 )}
                 {reminderNotification.badal && (
-                  <p>Badal: {reminderNotification.badal}</p>
+                  <p>Badal: <span className="text-app-text dark:text-slate-300 font-bold">{reminderNotification.badal}</span></p>
                 )}
               </div>
-            </div>
+            )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={() => {
                 setReminderNotification(null);
                 setIsReminderMuted(!isReminderMuted);
               }}
-              className="
-                bg-white/20
-                hover:bg-white/30
-                p-2
-                rounded-xl
-                transition-colors
-              "
+              className="p-2 rounded-xl bg-white dark:bg-slate-700 border border-stone-200 dark:border-stone-600 text-app-muted hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
               title={isReminderMuted ? "Unmute" : "Mute"}
             >
               {isReminderMuted ? (
-                <X size={16} />
+                <X size={14} />
               ) : (
-                <Bell size={16} />
+                <Bell size={14} />
               )}
             </button>
           </div>
         </div>
       )}
+
+      {/* Iqomah Countdown */}
       {iqomahInfo && (
-        <div
-          className="
-            bg-gradient-to-r from-app-primary-dark to-app-primary
-            text-white
-            px-6
-            py-5
-            rounded-3xl
-            shadow-lg
-            flex
-            items-center
-            justify-between
-            shrink-0
-            gap-4
-            border
-            border-white/20
-            mt-2
-            mb-4
-          "
-        >
-          <div className="flex items-center gap-3">
-            <div className="bg-white/20 p-2.5 rounded-xl">
-              <Timer size={22} className="text-amber-300" />
+        <div className="relative overflow-hidden rounded-3xl px-6 py-5 shadow-lg flex items-center justify-between shrink-0 gap-4 border border-white/20 gradient-brown mt-2 mb-4">
+          <div className="absolute inset-0 bg-white/5" />
+          <div className="relative flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-white/20 text-amber-300 shrink-0">
+              <Timer size={20} className="stroke-[2.5]" />
             </div>
-            <span className="text-sm font-bold tracking-wide">
+            <span className="text-sm font-black tracking-tight text-white">
               {iqomahInfo.label}
             </span>
           </div>
 
-          <div className="text-right">
-            <div className="text-3xl font-mono font-extrabold leading-none tracking-wider">
+          <div className="relative text-right">
+            <div className="text-3xl font-mono font-extrabold leading-none tracking-widest text-white">
               {String(iqomahInfo.minutes).padStart(2, "0")}:
               {String(iqomahInfo.seconds).padStart(2, "0")}
             </div>
-            <div className="text-[11px] text-emerald-100 font-medium mt-1">
+            <div className="text-[11px] text-emerald-100 font-semibold mt-1 tracking-wide">
               Berakhir pukul {iqomahEndTime || "--:--"} WIB
             </div>
           </div>
         </div>
       )}
+
       {/* PILIH SHALAT */}
       <div className="my-3">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -270,199 +213,157 @@ export default function PresensiView({
               onClick={() => setSelectedPrayer(s.id)}
               className={`
                 flex-shrink-0
-                px-4
-                py-2.5
+                px-5
+                py-3
                 rounded-2xl
                 text-xs
                 font-bold
                 transition-all
-                duration-300
+                duration-200
                 border
                 ${
                   selectedPrayer === s.id
                     ? "gradient-brown text-white shadow-md scale-[1.02] border-transparent"
-                    : "bg-white/80 dark:bg-slate-800/80 text-app-muted border-stone-200 dark:border-slate-700 hover:shadow-sm"
+                    : "bg-white/80 dark:bg-slate-800/80 text-app-muted border-stone-200 dark:border-stone-700 hover:shadow-sm hover:bg-stone-50 dark:hover:bg-stone-800"
                 }
               `}
             >
-              <div className="text-sm font-semibold">{s.name}</div>
-              <div className="font-mono text-[11px] font-bold mt-0.5 opacity-80">
+              <div className="text-sm font-extrabold tracking-tight">{s.name}</div>
+              <div className="font-mono text-[11px] font-bold mt-0.5 opacity-90">
                 {s.time}
               </div>
             </button>
           ))}
         </div>
       </div>
+
       {/* LIST PETUGAS */}
-      <main
-        className="
-        flex-1
-        glass-strong
-        rounded-3xl
-        shadow-sm
-        p-4
-        overflow-auto
-        border
-        border-stone-200/80
-        dark:border-stone-700/60
-      "
-      >
-        <div
-          className="
-            space-y-3
-          "
-        >
-          {sortedOfficers.map((officer) =>
-            (() => {
-              const meta = getOfficerMeta(officer);
+      <main className="flex-1 glass-strong rounded-3xl shadow-sm p-4 overflow-auto border border-stone-200/80 dark:border-stone-700/60">
+        <div className="space-y-2">
+          {sortedOfficers.map((officer) => {
+            const meta = getOfficerMeta(officer);
 
-              const roleConfig = {
-                Imam: {
-                  icon: Crown,
-                  gradient: "from-amber-100 to-orange-100",
-                  iconColor: "text-amber-600",
-                  border: "border-l-amber-400",
-                  badge: "role-imam",
-                },
-                Muadzin: {
-                  icon: Bell,
-                  gradient: "from-cyan-100 to-blue-100",
-                  iconColor: "text-cyan-600",
-                  border: "border-l-cyan-400",
-                  badge: "role-muadzin",
-                },
-                "Badal Imam": {
-                  icon: Shield,
-                  gradient: "from-emerald-100 to-green-100",
-                  iconColor: "text-emerald-600",
-                  border: "border-l-emerald-400",
-                  badge: "role-badal",
-                },
-              };
+            const roleConfig = {
+              Imam: {
+                icon: Crown,
+                gradient: "from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30",
+                iconColor: "text-amber-600 dark:text-amber-400",
+                avatarText: "text-amber-700 dark:text-amber-300",
+                border: "border-l-amber-400 dark:border-l-amber-500",
+                badge: "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/60",
+              },
+              Muadzin: {
+                icon: Bell,
+                gradient: "from-cyan-100 to-blue-100 dark:from-cyan-900/30 dark:to-blue-900/30",
+                iconColor: "text-cyan-600 dark:text-cyan-400",
+                avatarText: "text-cyan-700 dark:text-cyan-300",
+                border: "border-l-cyan-400 dark:border-l-cyan-500",
+                badge: "bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800/60",
+              },
+              "Badal Imam": {
+                icon: Shield,
+                gradient: "from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30",
+                iconColor: "text-emerald-600 dark:text-emerald-400",
+                avatarText: "text-emerald-700 dark:text-emerald-300",
+                border: "border-l-emerald-400 dark:border-l-emerald-500",
+                badge: "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60",
+              },
+            };
 
-              const roleStyle =
-                roleConfig[meta.roleTitle] ||
-                roleConfig["Badal Imam"];
+            const roleStyle =
+              roleConfig[meta.roleTitle] || roleConfig["Badal Imam"];
 
-              const RoleIcon = roleStyle.icon;
+            const RoleIcon = roleStyle.icon;
 
-              return (
-                <div
-                  key={officer.id}
-
-                  className={`
-            flex
-            items-center
-            justify-between
-            card-base
-            p-4
-            border-l-4
-            ${roleStyle.border}
-            animate-fade-in
-            active:scale-[0.98]
-          `
-                  }
-                >
-                  <div className="flex items-center gap-3">
-                    {/* Avatar with initials */}
-                    <div
-                      className={`
-                w-11 h-11
-                rounded-2xl
-                flex
-                items-center
-                justify-center
-                text-sm
-                font-bold
-                shadow-sm
-                ${roleStyle.iconColor}
-                bg-gradient-to-br ${roleStyle.gradient}
-              `}
-                    >
-                      {officer.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
-                    </div>
-
-                    <div>
-                      <p className="font-bold text-sm text-app-text tracking-tight leading-tight">
-                        {officer.name}
-                      </p>
-
-                      <span
-                        className={`
-                  text-[10px]
-                  font-bold
-                  px-2
-                  py-0.5
-                  rounded-full
-                  inline-block
-                  mt-1
-                  ${roleStyle.badge}
-                  border
-                `}
-                      >
-                        {meta.roleTitle}
-                      </span>
-
-                      {meta.scanRole && (
-                        <p className="text-[10px] text-app-muted font-medium mt-1">
-                          {meta.windowLabel}
-                        </p>
-                      )}
-                    </div>
+            return (
+              <div
+                key={officer.id}
+                className="group flex items-center justify-between p-3.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-stone-100 dark:border-stone-700/50 rounded-2xl hover:bg-stone-50/80 dark:hover:bg-stone-800/80 transition-all duration-200 active:scale-[0.98] border-l-4"
+                style={{
+                  borderLeftColor: meta.roleTitle === 'Imam' ? '#f59e0b' : meta.roleTitle === 'Muadzin' ? '#06b6d4' : '#10b981',
+                }}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  {/* Avatar with role icon */}
+                  <div className={`flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br ${roleStyle.gradient} ${roleStyle.iconColor} shadow-sm border border-white/60 dark:border-white/5 shrink-0`}>
+                    <RoleIcon size={18} strokeWidth={2.5} />
                   </div>
 
-                  {meta.scanRole && (
-                    <button
-                      disabled={!meta.windowOpen}
-
-                      onClick={async () => {
-                        const result = await generateQrCode(
-                          officer.name,
-                          meta.scanRole,
-                          currentSchedule
-                        );
-                        if (result?.success && result.token) {
-                          setQrModal({
-                            isOpen: true,
-                            officerName: officer.name,
-                            role: meta.scanRole,
-                            prayer: currentSchedule.name || currentSchedule.id,
-                            prayerTime: currentSchedule.time,
-                            token: result.token,
-                            expiresAt: result.expiresAt,
-                          });
-                        }
-                      }}
-
+                  <div className="min-w-0">
+                    <p className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight leading-tight truncate">
+                      {officer.name}
+                    </p>
+                    <span
                       className={`
-                p-2.5
-                rounded-2xl
-                shadow-lg
-                transition-all
-                duration-200
-                relative
-                overflow-hidden
-
-                 ${
-                   meta.windowOpen
-                     ? "bg-gradient-to-br from-[#7D5A41] to-[#D3AF96] text-white hover:shadow-xl hover:scale-110 active:scale-95 dark:hover:shadow-none dark:border dark:border-white/10"
-                     : "bg-slate-100 text-slate-300 cursor-not-allowed dark:bg-slate-700 dark:text-slate-400"
-                 }
-
-                `
-                      }
+                        text-[10px]
+                        font-bold
+                        px-2
+                        py-0.5
+                        rounded-full
+                        inline-block
+                        mt-1
+                        border
+                        ${roleStyle.badge}
+                      `}
                     >
-                      {meta.windowOpen && (
-                        <span className="absolute inset-0 bg-white/20 animate-pulse rounded-2xl" />
-                      )}
-                      <QrCode size={26} />
-                    </button>
-                  )}
+                      {meta.roleTitle}
+                    </span>
+                    {meta.scanRole && (
+                      <p className="text-[10px] text-app-muted font-medium mt-1">
+                        {meta.windowLabel}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              );
-            })(),
-          )}
-      </div>
+
+                {meta.scanRole && (
+                  <button
+                    disabled={!meta.windowOpen}
+
+                    onClick={async () => {
+                      const result = await generateQrCode(
+                        officer.name,
+                        meta.scanRole,
+                        currentSchedule
+                      );
+                      if (result?.success && result.token) {
+                        setQrModal({
+                          isOpen: true,
+                          officerName: officer.name,
+                          role: meta.scanRole,
+                          prayer: currentSchedule.name || currentSchedule.id,
+                          prayerTime: currentSchedule.time,
+                          token: result.token,
+                          expiresAt: result.expiresAt,
+                        });
+                      }
+                    }}
+
+                    className={`
+                      relative
+                      flex items-center justify-center
+                      p-2.5
+                      rounded-2xl
+                      transition-all
+                      duration-200
+                      overflow-hidden
+
+                      ${meta.windowOpen
+                        ? "gradient-brown text-white shadow-md hover:shadow-lg active:scale-95"
+                        : "bg-slate-100 text-slate-300 cursor-not-allowed dark:bg-slate-700 dark:text-slate-400 border border-stone-200 dark:border-stone-700"
+                      }
+                    `}
+                  >
+                    {meta.windowOpen && (
+                      <span className="absolute inset-0 bg-white/20 animate-pulse rounded-2xl" />
+                    )}
+                    <QrCode size={26} className="relative" />
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </main>
       <QrCodeModal
         isOpen={qrModal.isOpen}

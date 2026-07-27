@@ -92,14 +92,27 @@ export default function RiwayatView({
       </div>
 
       {historyLoading ? (
-        <div className="text-center py-12">
-          <div className="inline-block w-6 h-6 border-2 border-app-primary border-t-transparent rounded-full animate-spin mb-2" />
-          <p className="text-xs text-app-muted">Memuat data...</p>
+        <div className="space-y-2.5">
+          {[1,2,3].map((s) => (
+            <div key={s} className="rounded-2xl border border-stone-100 dark:border-stone-700/50 overflow-hidden">
+              <div className="p-3.5 space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="skeleton w-8 h-8 rounded-xl" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="skeleton h-3 w-32" />
+                    <div className="skeleton h-3 w-24" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : history.length === 0 ? (
-        <div className="text-center py-12">
-          <CalendarDays size={36} className="mx-auto text-stone-300 dark:text-stone-600 mb-2" />
-          <p className="text-xs font-bold text-app-muted">Belum ada data absensi.</p>
+        <div className="text-center py-16">
+          <svg className="mx-auto w-16 h-16 mb-3 text-stone-200 dark:text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12m-3.75.75h9.75m-9.75 0V19.5m0 2.25h9.75m-9.75 0V19.5m0 2.25h9.75" />
+          </svg>
+          <p className="text-xs font-extrabold text-app-text dark:text-slate-200">Belum ada data absensi.</p>
         </div>
       ) : (
         <div className="space-y-2 max-h-[60vh] overflow-auto pr-1">

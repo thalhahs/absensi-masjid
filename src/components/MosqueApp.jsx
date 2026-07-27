@@ -1366,6 +1366,34 @@ export default function MosqueApp() {
 
         <div className="flex items-center gap-2">
           <button
+            className="
+              relative
+              bg-white/20
+              backdrop-blur-md
+              px-2.5
+              py-1.5
+              rounded-full
+              flex
+              items-center
+              gap-1
+              text-xs
+              text-white
+              border
+              border-white/30
+              font-bold
+              shadow-sm
+              hover:bg-white/30
+              transition-colors
+              dark:text-slate-100 dark:border-white/10
+            "
+          >
+            <Bell size={14} />
+            {(reminderNotification || recentNotification) && (
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-white animate-pulse-soft" />
+            )}
+          </button>
+
+          <button
             onClick={() => {
               const next = !isDarkMode;
               setIsDarkMode(next);

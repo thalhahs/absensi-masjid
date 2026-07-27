@@ -383,14 +383,23 @@ export default function JadwalView({
       )}
 
       {allAssignmentsLoading ? (
-        <div className="text-center py-12">
-          <div className="inline-block w-8 h-8 border-2 border-app-primary border-t-transparent rounded-full animate-spin mb-2" />
-          <p className="text-xs text-app-muted">Memuat jadwal...</p>
+        <div className="space-y-2.5">
+          {[1,2].map((s) => (
+            <div key={s} className="rounded-2xl border border-stone-100 dark:border-stone-700/50 overflow-hidden">
+              <div className="skeleton h-14 w-full" />
+              <div className="p-3 space-y-2">
+                <div className="skeleton h-3 w-32" />
+                <div className="skeleton h-3 w-24" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : sortedDates.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-2xl mb-2 opacity-30">📅</p>
-          <p className="text-xs text-app-muted">Belum ada jadwal</p>
+        <div className="text-center py-16">
+          <svg className="mx-auto w-16 h-16 mb-3 text-stone-200 dark:text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          </svg>
+          <p className="text-xs font-extrabold text-app-text dark:text-slate-200">Belum ada jadwal</p>
           <p className="text-[10px] text-app-muted mt-1">Klik + Tambah Jadwal untuk memulai</p>
         </div>
       ) : (
