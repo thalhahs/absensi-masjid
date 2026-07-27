@@ -11,6 +11,7 @@ export default function PinGate({ children }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+
   useEffect(() => {
     const session = getSession();
     if (session && session.expiresAt && Date.now() > session.expiresAt) {
@@ -34,13 +35,20 @@ export default function PinGate({ children }) {
     setError('');
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const res = await fetch('/api/auth/pin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pin }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
       const data = await res.json();
+      console.log('PIN login response:', data);
 
       if (!res.ok || !data.success) {
         setError(data.message || 'PIN salah');
@@ -51,8 +59,12 @@ export default function PinGate({ children }) {
       setSession(data.session);
       setPin('');
       setLoading(false);
-    } catch {
-      setError('Gagal terhubung ke server');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.name === 'AbortError' ? 'Permintaan timeout' : 'Gagal terhubung ke server');
       setLoading(false);
     }
   }, [pin]);
