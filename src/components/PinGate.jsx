@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Lock, Shield } from 'lucide-react';
-import { setSession, getSession, clearSession } from '@/lib/session';
+import { setSession, clearSession, getSession } from '@/lib/session';
 
 const PIN_LENGTH = 6;
 
@@ -10,8 +10,7 @@ export default function PinGate({ children }) {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const loginAttemptedRef = useRef(false);
+  const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
     const session = getSession();
@@ -19,13 +18,6 @@ export default function PinGate({ children }) {
       clearSession();
     }
   }, []);
-  useEffect(() => {
-    return () => {
-      loginAttemptedRef.current = false;
-    };
-  }, []);
-
-
 
   const handlePinChange = useCallback((value) => {
     const cleaned = value.replace(/[^0-9]/g, '').slice(0, PIN_LENGTH);
@@ -33,75 +25,41 @@ export default function PinGate({ children }) {
     setError('');
   }, []);
 
-  const login = useCallback(async () => {
-    if (pin.length !== PIN_LENGTH) {
-      setError(`Masukkan ${PIN_LENGTH} digit PIN`);
-      return;
-    }
+  useEffect(() => {
+    if (pin.length !== PIN_LENGTH || loading || authenticated) return;
 
-    loginAttemptedRef.current = true;
+    let cancelled = false;
     setLoading(true);
     setError('');
 
-    const safetyTimeout = setTimeout(() => {
-      if (loginAttemptedRef.current) {
+    fetch('/api/auth/pin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        console.log('PIN login response:', data);
+        if (data?.success) {
+          setSession(data.session);
+          setAuthenticated(true);
+        } else {
+          setError(data?.message || 'PIN salah');
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error('Login error:', err);
+        setError('Gagal terhubung ke server');
         setLoading(false);
-        setError('Permintaan timeout. Cek koneksi dan coba lagi.');
-      }
-    }, 12000);
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-      const res = await fetch('/api/auth/pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin }),
-        signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
-
-      let data = null;
-      try {
-        data = await res.json();
-      } catch (jsonError) {
-        console.error('PIN login JSON parse error:', jsonError);
-        setError('Respons server tidak valid');
-        setLoading(false);
-        clearTimeout(safetyTimeout);
-        return;
-      }
-
-      console.log('PIN login response:', data);
-
-      if (!res.ok || !data?.success) {
-        setError(data?.message || 'PIN salah');
-        setLoading(false);
-        clearTimeout(safetyTimeout);
-        return;
-      }
-
-      setSession(data.session);
-      setPin('');
-      setIsAuthenticated(true);
-      setLoading(false);
-      clearTimeout(safetyTimeout);
-    } catch (err) {
-      console.error('Login error:', err);
-      setError(err.name === 'AbortError' ? 'Permintaan timeout' : 'Gagal terhubung ke server');
-      setLoading(false);
-      clearTimeout(safetyTimeout);
-    }
-  }, [pin]);
-
-  useEffect(() => {
-    if (pin.length === PIN_LENGTH && !loginAttemptedRef.current) {
-      loginAttemptedRef.current = true;
-      login();
-    }
-  }, [pin, login]);
+    return () => {
+      cancelled = true;
+    };
+  }, [pin, loading, authenticated]);
 
   const fillDigit = (digit) => {
     handlePinChange(pin + digit);
@@ -111,11 +69,9 @@ export default function PinGate({ children }) {
     handlePinChange('');
   };
 
-  if (isAuthenticated) {
+  if (authenticated) {
     return children;
   }
-
-  const digits = pin.split('').map(() => '●').join('');
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200 dark:from-stone-900 dark:to-stone-800 p-3">
