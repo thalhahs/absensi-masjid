@@ -55,14 +55,12 @@ export default function PresensiView({
   showError,
 }) {
   const session = getSession();
-  const [qrModal, setQrModal] = useState({
-    isOpen: false,
-    officerName: '',
-    role: '',
+  const [prayerQr, setPrayerQr] = useState({
+    isActive: false,
+    token: '',
     prayer: '',
     prayerTime: '',
-    token: '',
-    expiresAt: null,
+    generatedAt: null,
   });
 
   const iqomahInfo = getIqomahCountdown(
@@ -88,9 +86,9 @@ export default function PresensiView({
   const [selectedReplacementId, setSelectedReplacementId] = useState('');
 
   useEffect(() => {
-    if (!qrModal.token || !qrModal.isOpen) return;
+    if (!prayerQr.token || !prayerQr.isActive) return;
 
-    const stateRef = { current: qrModal };
+    const stateRef = { current: prayerQr };
     const setState = (updater) => {
       const next = typeof updater === 'function' ? updater(stateRef.current) : updater;
       stateRef.current = next;
@@ -98,17 +96,16 @@ export default function PresensiView({
 
     const interval = setInterval(async () => {
       const current = stateRef.current;
-      if (!current.token || !current.isOpen) return;
+      if (!current.token || !current.isActive) return;
 
       try {
         const res = await fetch(`/api/approve?token=${current.token}`);
         const data = await res.json();
         if (data.success && data.qrToken?.used) {
-          setScannedTokens((prev) => new Set(prev).add(current.officerName + '-' + current.role));
-          setQrModal((prev) => ({ ...prev, isOpen: false }));
+          setPrayerQr((prev) => ({ ...prev, isActive: false }));
           setQrSuccessNotification({
-            officerName: current.officerName,
-            role: current.role,
+            officerName: 'QR Terdaftar',
+            role: '',
             prayer: current.prayer,
             prayerTime: current.prayerTime,
           });
@@ -120,7 +117,7 @@ export default function PresensiView({
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [qrModal.token, qrModal.isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [prayerQr.token, prayerQr.isActive, suppressReminders]);
 
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [toastData, setToastData] = useState(null);
@@ -350,75 +347,37 @@ export default function PresensiView({
                   </div>
                 </div>
 
-                {meta.scanRole && (
-                  <button
-                    disabled={
-                      !meta.windowOpen ||
-                      Boolean(activeQrOfficer && activeQrOfficer !== officer.name) ||
-                      scannedOfficers.has(officer.name)
-                    }
-
-                    onClick={async () => {
-                      if (!meta.windowOpen) return;
-                      try {
-                        setActiveQrOfficer(officer.name);
-                        // Find officer id from sortedOfficers
-                        const foundOfficer = sortedOfficers.find(o => o.name === officer.name);
-                        const result = await generateQrCode(
-                          officer.name,
-                          foundOfficer?.id || null,
-                          meta.scanRole,
-                          currentSchedule
-                        );
-                        if (result?.success && result.token) {
-                          setQrModal({
-                            isOpen: true,
-                            officerName: officer.name,
-                            role: meta.scanRole,
-                            prayer: currentSchedule.name || currentSchedule.id,
-                            prayerTime: currentSchedule.time,
-                            token: result.token,
-                            expiresAt: result.expiresAt,
-                          });
-                        } else {
-                          setActiveQrOfficer(null);
+                {meta.scanRole && !prayerQr.isActive && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={async () => {
+                        try {
+                          const foundOfficer = sortedOfficers.find(o => o.name === session?.name);
+                          const result = await generateQrCode(
+                            currentSchedule.name || currentSchedule.id,
+                            foundOfficer?.id || null,
+                            meta.scanRole,
+                            currentSchedule
+                          );
+                          if (result?.success && result.token) {
+                            setPrayerQr({
+                              isActive: true,
+                              token: result.token,
+                              prayer: currentSchedule.name || currentSchedule.id,
+                              prayerTime: currentSchedule.time,
+                              generatedAt: Date.now(),
+                            });
+                          }
+                        } catch (err) {
+                          console.error('Failed to generate QR', err);
                         }
-                      } catch {
-                        setActiveQrOfficer(null);
-                      }
-                    }}
-
-                    className={`
-                      relative
-                      flex items-center justify-center
-                      p-2.5
-                      rounded-2xl
-                      transition-all
-                      duration-200
-                      overflow-hidden
-
-                      ${
-                        scannedOfficers.has(officer.name)
-                          ? "bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/60 cursor-not-allowed"
-                          : activeQrOfficer === officer.name
-                            ? "gradient-brown text-white shadow-md hover:shadow-lg active:scale-95"
-                            : activeQrOfficer && activeQrOfficer !== officer.name
-                              ? "bg-slate-50 text-slate-300 cursor-not-allowed border border-stone-200 dark:bg-slate-800 dark:text-slate-500 dark:border-stone-700"
-                              : meta.windowOpen
-                                ? "gradient-brown text-white shadow-md hover:shadow-lg active:scale-95"
-                                : "bg-slate-100 text-slate-300 cursor-not-allowed dark:bg-slate-700 dark:text-slate-400 border border-stone-200 dark:border-stone-700"
-                      }
-                    `}
-                  >
-                    {activeQrOfficer === officer.name && meta.windowOpen && (
-                      <span className="absolute inset-0 bg-white/20 animate-pulse rounded-2xl" />
-                    )}
-                    {scannedOfficers.has(officer.name) ? (
-                      <Check size={26} className="relative stroke-[2.5]" />
-                    ) : (
-                      <QrCode size={26} className="relative" />
-                    )}
-                  </button>
+                      }}
+                      className="gradient-brown text-white px-4 py-2.5 rounded-xl text-[10px] font-bold shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center gap-2"
+                    >
+                      <QrCode size={16} />
+                      Tampilkan QR {currentSchedule?.name || ''}
+                    </button>
+                  </div>
                 )}
               </div>
             );

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { clearSession } from '@/lib/session';
 import { supabase } from '@/lib/supabase';
 import crypto from 'crypto';
 
