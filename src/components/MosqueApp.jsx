@@ -151,7 +151,6 @@ import PetugasView from "@/views/PetugasView";
 import PresensiView from "@/views/PresensiView";
 import RiwayatView from "@/views/RiwayatView";
 import JadwalView from "@/views/JadwalView";
-import StatistikView from "@/views/StatistikView";
 import ProfileView from "@/views/ProfileView";
 
 export default function MosqueApp() {

@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, CalendarDays, Clock, CheckCircle2, XCircle, Trophy, LogOut } from 'lucide-react';
+import { User, CalendarDays, Clock, CheckCircle2, XCircle, Trophy, LogOut, BarChart3 } from 'lucide-react';
 
-export default function ProfileView({ history, session, onLogout }) {
+export default function ProfileView({ history, officers, session, onLogout, isSuperadmin }) {
   const officerName = session?.name || '';
   const officerRole = session?.role || 'officer';
+
+  const [statsData, setStatsData] = useState([]);
+  const [statsLoading, setStatsLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState('');
 
   useEffect(() => {
@@ -28,6 +31,28 @@ export default function ProfileView({ history, session, onLogout }) {
   }, [session?.expiresAt]);
 
   const myHistory = history.filter((item) => item.officer_name === officerName);
+
+  useEffect(() => {
+    if (!isSuperadmin) return;
+
+    const fetchStats = async () => {
+      setStatsLoading(true);
+      try {
+        const { data, error } = await fetch('/api/jadwal-shalat?date=' + new Date().toISOString().split('T')[0])
+          .then(r => r.json());
+        if (error || !data) {
+          setStatsData([]);
+        } else {
+          setStatsData(data.stats || []);
+        }
+      } catch {
+        setStatsData([]);
+      }
+      setStatsLoading(false);
+    };
+
+    fetchStats();
+  }, [isSuperadmin]);
 
   const hadir = myHistory.filter((item) => item.status === 'HADIR').length;
   const terlambat = myHistory.filter((item) => item.status === 'TERLAMBAT').length;
@@ -82,7 +107,7 @@ export default function ProfileView({ history, session, onLogout }) {
           </button>
         </div>
 
-        {/* Stats Grid */}
+        {/* Stats Grid - Personal */}
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-emerald-50/80 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800/50 rounded-2xl p-3 text-center">
             <CheckCircle2 size={20} className="mx-auto text-emerald-600 dark:text-emerald-400 mb-1" />
@@ -124,6 +149,60 @@ export default function ProfileView({ history, session, onLogout }) {
             </p>
           </div>
         </div>
+
+        {/* Superadmin Stats Overview */}
+        {isSuperadmin && (
+          <div className="mt-4">
+            <h3 className="text-xs font-extrabold text-app-text dark:text-slate-100 tracking-tight mb-2">
+              <BarChart3 size={14} className="inline mr-1 mb-0.5 text-app-primary" />
+              Statistik Semua Petugas
+            </h3>
+
+            {statsLoading ? (
+              <div className="space-y-2">
+                {[1, 2, 3].map((s) => (
+                  <div key={s} className="skeleton h-16 rounded-2xl" />
+                ))}
+              </div>
+            ) : statsData.length === 0 ? (
+              <p className="text-xs text-app-muted text-center py-4">Belum ada data statistik.</p>
+            ) : (
+              <div className="space-y-2 max-h-[40vh] overflow-auto">
+                {statsData.map((stat) => (
+                  <div
+                    key={stat.name}
+                    className="flex items-center justify-between p-3 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-stone-100 dark:border-stone-700/50 rounded-2xl"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-app-text dark:text-slate-100 truncate">
+                        {stat.name}
+                      </p>
+                      <p className="text-[10px] text-app-muted">
+                        Hadir: {stat.HADIR} · Terlambat: {stat.TERLAMBAT} · Alfa: {stat.ALFA}
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-app-primary/10 dark:bg-app-primary/20 text-app-primary border border-stone-200 dark:border-stone-700 ml-2">
+                      {stat.hadirRate}%
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Superadmin Stats Section */}
+        {isSuperadmin && (
+          <div className="mt-4">
+            <h3 className="text-xs font-extrabold text-app-text dark:text-slate-100 tracking-tight mb-2">
+              <BarChart3 size={14} className="inline mr-1 mb-0.5 text-app-primary" />
+              Statistik Semua Petugas
+            </h3>
+            <div className="text-center py-8">
+              <p className="text-[10px] text-app-muted">Fitur statistik dalam pengembangan</p>
+            </div>
+          </div>
+        )}
 
         {/* Recent History */}
         <div>
