@@ -46,10 +46,6 @@ export default function PresensiView({
   qrSuccessNotification,
   setQrSuccessNotification,
   suppressReminders,
-  activeQrOfficer,
-  setActiveQrOfficer,
-  scannedOfficers,
-  setScannedOfficers,
   role,
   isSuperadmin,
   showError,
@@ -385,16 +381,13 @@ export default function PresensiView({
         </div>
       </main>
       <QrCodeModal
-        isOpen={qrModal.isOpen}
-        onClose={() => {
-          setQrModal((prev) => ({ ...prev, isOpen: false }));
-          setActiveQrOfficer(null);
-        }}
-        token={qrModal.token}
-        officerName={qrModal.officerName}
-        prayer={qrModal.prayer}
-        prayerTime={qrModal.prayerTime}
-        expiresAt={qrModal.expiresAt}
+        isOpen={prayerQr.isActive}
+        onClose={() => setPrayerQr((prev) => ({ ...prev, isActive: false }))}
+        token={prayerQr.token}
+        officerName={session?.name || 'Current User'}
+        prayer={prayerQr.prayer}
+        prayerTime={prayerQr.prayerTime}
+        expiresAt={prayerQr.generatedAt ? new Date(prayerQr.generatedAt + 15 * 60 * 1000).toISOString() : null}
       />
 
       {/* Replacement Modal */}
@@ -442,25 +435,24 @@ export default function PresensiView({
                 onClick={async () => {
                   // Handle replacement attendance
                   const selectedOfficer = replacementOptions.find(o => o.id === selectedReplacementId);
-                  if (selectedOfficer && qrModal.token) {
+                  if (selectedOfficer && prayerQr.token) {
                     try {
                       const res = await fetch('/api/approve', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                          token: qrModal.token,
+                          token: prayerQr.token,
                           officerId: selectedOfficer.id,
                           replacement: true,
                         }),
                       });
                       const data = await res.json();
                       if (data.success) {
-                        setScannedOfficers(prev => new Set(prev).add(selectedOfficer.name));
                         setQrSuccessNotification({
                           officerName: selectedOfficer.name,
                           role: selectedOfficer.role || 'Imam',
-                          prayer: qrModal.prayer,
-                          prayerTime: qrModal.prayerTime,
+                          prayer: prayerQr.prayer,
+                          prayerTime: prayerQr.prayerTime,
                         });
                         suppressReminders(30000);
                       } else {
@@ -472,8 +464,7 @@ export default function PresensiView({
                       setNeedsReplacement(false);
                       setReplacementOptions([]);
                       setSelectedReplacementId('');
-                      setQrModal(prev => ({ ...prev, isOpen: false }));
-                      setActiveQrOfficer(null);
+                      setPrayerQr((prev) => ({ ...prev, isActive: false }));
                     }
                   }
                 }}

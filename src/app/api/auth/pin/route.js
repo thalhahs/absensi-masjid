@@ -51,6 +51,9 @@ export async function POST(request) {
     let matchedOfficer = null;
 
     for (const officer of officers) {
+      if (!officer.pin_hash || officer.pin_hash === '') {
+        continue;
+      }
       if (await verifyPin(pin, officer.pin_hash)) {
         matchedOfficer = officer;
         break;
@@ -58,6 +61,7 @@ export async function POST(request) {
     }
 
     if (!matchedOfficer) {
+      clearSession();
       return NextResponse.json(
         { success: false, message: 'PIN salah' },
         { status: 401 }
