@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { getSession } from '@/lib/session';
 import { parseTimeToMinutes, getDateMinutes } from '@/lib/attendance';
 import { Bell, X, Timer, QrCode, Crown, Shield, Check, User } from 'lucide-react';
 import QrCodeModal from '@/components/QrCodeModal';
@@ -49,7 +50,11 @@ export default function PresensiView({
   setActiveQrOfficer,
   scannedOfficers,
   setScannedOfficers,
+  role,
+  isSuperadmin,
+  showError,
 }) {
+  const session = getSession();
   const [qrModal, setQrModal] = useState({
     isOpen: false,
     officerName: '',
@@ -78,6 +83,9 @@ export default function PresensiView({
 
   const [scannedTokens, setScannedTokens] = useState(new Set());
   const [scanError, setScanError] = useState('');
+  const [needsReplacement, setNeedsReplacement] = useState(false);
+  const [replacementOptions, setReplacementOptions] = useState([]);
+  const [selectedReplacementId, setSelectedReplacementId] = useState('');
 
   useEffect(() => {
     if (!qrModal.token || !qrModal.isOpen) return;
@@ -354,8 +362,11 @@ export default function PresensiView({
                       if (!meta.windowOpen) return;
                       try {
                         setActiveQrOfficer(officer.name);
+                        // Find officer id from sortedOfficers
+                        const foundOfficer = sortedOfficers.find(o => o.name === officer.name);
                         const result = await generateQrCode(
                           officer.name,
+                          foundOfficer?.id || null,
                           meta.scanRole,
                           currentSchedule
                         );
@@ -426,6 +437,96 @@ export default function PresensiView({
         prayerTime={qrModal.prayerTime}
         expiresAt={qrModal.expiresAt}
       />
+
+      {/* Replacement Modal */}
+      {needsReplacement && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="w-full max-w-sm bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-2xl border border-stone-200 dark:border-stone-700">
+            <h3 className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight mb-1">
+              Gantikan Petugas
+            </h3>
+            <p className="text-[10px] font-bold text-app-muted mb-3">
+              Anda tidak dijadwalkan pada waktu ini. Pilih petugas yang ingin digantikan:
+            </p>
+
+            <div className="space-y-1.5 mb-4 max-h-48 overflow-auto">
+              {replacementOptions.map((officer) => (
+                <button
+                  key={officer.id}
+                  onClick={() => setSelectedReplacementId(officer.id)}
+                  className={`
+                    w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all
+                    ${selectedReplacementId === officer.id
+                      ? 'gradient-brown text-white'
+                      : 'bg-stone-50 dark:bg-slate-700 text-app-text hover:bg-stone-100 dark:hover:bg-slate-600'
+                    }
+                  `}
+                >
+                  {officer.name}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setNeedsReplacement(false);
+                  setReplacementOptions([]);
+                  setSelectedReplacementId('');
+                }}
+                className="flex-1 py-2 rounded-xl text-[10px] font-bold border border-stone-200 dark:border-stone-600 text-app-muted hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                disabled={!selectedReplacementId}
+                onClick={async () => {
+                  // Handle replacement attendance
+                  const selectedOfficer = replacementOptions.find(o => o.id === selectedReplacementId);
+                  if (selectedOfficer && qrModal.token) {
+                    try {
+                      const res = await fetch('/api/approve', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          token: qrModal.token,
+                          officerId: selectedOfficer.id,
+                          replacement: true,
+                        }),
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        setScannedOfficers(prev => new Set(prev).add(selectedOfficer.name));
+                        setQrSuccessNotification({
+                          officerName: selectedOfficer.name,
+                          role: selectedOfficer.role || 'Imam',
+                          prayer: qrModal.prayer,
+                          prayerTime: qrModal.prayerTime,
+                        });
+                        suppressReminders(30000);
+                      } else {
+                        showError?.(data.message || 'Gagal menyimpan absensi');
+                      }
+                    } catch (err) {
+                      console.error('Replacement error:', err);
+                    } finally {
+                      setNeedsReplacement(false);
+                      setReplacementOptions([]);
+                      setSelectedReplacementId('');
+                      setQrModal(prev => ({ ...prev, isOpen: false }));
+                      setActiveQrOfficer(null);
+                    }
+                  }
+                }}
+                disabled={!selectedReplacementId}
+                className="flex-1 py-2 rounded-xl text-[10px] font-bold gradient-brown text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Konfirmasi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

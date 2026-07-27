@@ -50,6 +50,8 @@ import { supabase } from "@/lib/supabase";
 
 import { MOSQUE_NAME, MOSQUE_AREA } from "@/lib/mosque-config";
 
+import { getSession, clearSession } from "@/lib/session";
+
 const DEFAULT_SCHEDULES = [
   {
     id: "subuh",
@@ -226,6 +228,10 @@ export default function MosqueApp() {
   const [statsData, setStatsData] = useState([]);
 
   const [statsLoading, setStatsLoading] = useState(false);
+
+  const session = getSession();
+  const currentRole = session?.role || 'superadmin';
+  const isSuperadmin = currentRole === 'superadmin';
 
   const [activeQrOfficer, setActiveQrOfficer] = useState(null);
   const [scannedOfficers, setScannedOfficers] = useState(new Set());
@@ -1127,7 +1133,7 @@ export default function MosqueApp() {
     }, 3500);
   };
 
-  const generateQrCode = async (officerName, role, schedule) => {
+  const generateQrCode = async (officerName, officerId, role, schedule) => {
     const now = new Date();
     const result = validateScan(
       role,
@@ -1138,7 +1144,6 @@ export default function MosqueApp() {
 
     if (!result.allowed) {
       showError(result.reason);
-
       return { success: false, message: result.reason };
     }
 
@@ -1146,7 +1151,6 @@ export default function MosqueApp() {
       Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10) + '-' + Math.random().toString(36).slice(2, 10);
     const dateStr = toLocalDateStr(now);
 
-    // QR berlaku sampai window absensi berakhir, bukan fixed 5 menit
     const adzanMinutes = parseTimeToMinutes(schedule.time);
     const iqomahMinutes = schedule.id === 'subuh' ? 20 : 15;
     const windowEndMinutes = adzanMinutes + iqomahMinutes;
@@ -1165,6 +1169,7 @@ export default function MosqueApp() {
       .insert([
         {
           token,
+          officer_id: officerId || null,
           officer_name: officerName,
           role,
           prayer: schedule.name || schedule.id,
@@ -1185,6 +1190,7 @@ export default function MosqueApp() {
       success: true,
       token,
       expiresAt: expiresAt.toISOString(),
+      officerId: officerId || null,
     };
   };
 
@@ -1494,7 +1500,7 @@ export default function MosqueApp() {
 
         {currentView === "riwayat" && <RiwayatView history={history} historyLoading={historyLoading} historyFilterDate={historyFilterDate} historyFilterOfficer={historyFilterOfficer} officers={officers} setHistoryFilterDate={setHistoryFilterDate} setHistoryFilterOfficer={setHistoryFilterOfficer} exportHistoryCSV={exportHistoryCSV} />}
 
-        {currentView === "jadwal" && <JadwalView allAssignments={allAssignments} allAssignmentsLoading={allAssignmentsLoading} expandedDates={expandedDates} editingAssignmentId={editingAssignmentId} editForm={editForm} officers={officers} fetchAllAssignments={fetchAllAssignments} toggleDateExpanded={toggleDateExpanded} startEditAssignment={startEditAssignment} cancelEditAssignment={cancelEditAssignment} saveAssignmentEdit={saveAssignmentEdit} deleteAssignment={deleteAssignment} showAddAssignmentForm={showAddAssignmentForm} setShowAddAssignmentForm={setShowAddAssignmentForm} addAssignmentForm={addAssignmentForm} setAddAssignmentForm={setAddAssignmentForm} createAssignment={createAssignment} />}
+        {currentView === "jadwal" && <JadwalView allAssignments={allAssignments} allAssignmentsLoading={allAssignmentsLoading} expandedDates={expandedDates} editingAssignmentId={editingAssignmentId} editForm={editForm} officers={officers} fetchAllAssignments={fetchAllAssignments} toggleDateExpanded={toggleDateExpanded} startEditAssignment={startEditAssignment} cancelEditAssignment={cancelEditAssignment} saveAssignmentEdit={saveAssignmentEdit} deleteAssignment={deleteAssignment} showAddAssignmentForm={showAddAssignmentForm} setShowAddAssignmentForm={setShowAddAssignmentForm} addAssignmentForm={addAssignmentForm} setAddAssignmentForm={setAddAssignmentForm} createAssignment={createAssignment} role={currentRole} isSuperadmin={isSuperadmin} />}
 
         {currentView === "petugas" && (
           <PetugasView
@@ -1510,10 +1516,12 @@ export default function MosqueApp() {
             cancelEditOfficer={cancelEditOfficer}
             addOfficer={addOfficer}
             deleteOfficer={deleteOfficer}
+            role={currentRole}
+            isSuperadmin={isSuperadmin}
           />
         )}
 
-        {currentView === "statistik" && <StatistikView statsData={statsData} statsLoading={statsLoading} />}
+        {currentView === "statistik" && <StatistikView statsData={statsData} statsLoading={statsLoading} role={currentRole} isSuperadmin={isSuperadmin} />}
       </div>
 
       {/* TAB NAVIGASI */}

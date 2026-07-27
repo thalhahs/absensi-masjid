@@ -16,6 +16,8 @@ export default function PetugasView({
   cancelEditOfficer,
   addOfficer,
   deleteOfficer,
+  role,
+  isSuperadmin,
 }) {
   return (
     <main className="flex-1 glass-strong rounded-3xl shadow-sm p-4 overflow-auto border border-stone-200/80 dark:border-stone-700/60">
@@ -25,6 +27,13 @@ export default function PetugasView({
       </h2>
 
       <div className="max-w-md mx-auto">
+        {!isSuperadmin && (
+          <div className="text-center py-3 mb-3 rounded-2xl bg-stone-50 dark:bg-slate-800 border border-stone-200 dark:border-stone-700">
+            <p className="text-[10px] font-bold text-app-muted">
+              Hanya superadmin yang bisa mengelola petugas
+            </p>
+          </div>
+        )}
         <label className="block text-[10px] font-bold text-app-muted uppercase tracking-wider mb-1.5">
           Nama Petugas
         </label>
@@ -65,34 +74,40 @@ export default function PetugasView({
               >
                 {editingOfficerId === officer.id ? (
                   <div className="flex-1 flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={editOfficerName}
-                      onChange={(e) => setEditOfficerName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          saveOfficerEdit(officer.id);
-                        } else if (e.key === "Escape") {
-                          cancelEditOfficer();
-                        }
-                      }}
-                      autoFocus
-                      className="flex-1 text-xs border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 bg-white/80 dark:bg-slate-800/80 text-app-text font-medium focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all"
-                    />
+                    {isSuperadmin ? (
+                      <>
+                        <input
+                          type="text"
+                          value={editOfficerName}
+                          onChange={(e) => setEditOfficerName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              saveOfficerEdit(officer.id);
+                            } else if (e.key === "Escape") {
+                              cancelEditOfficer();
+                            }
+                          }}
+                          autoFocus
+                          className="flex-1 text-xs border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 bg-white/80 dark:bg-slate-800/80 text-app-text font-medium focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all"
+                        />
 
-                    <button
-                      onClick={() => saveOfficerEdit(officer.id)}
-                      className="p-1.5 rounded-lg text-app-primary hover:bg-app-primary/10 dark:hover:bg-app-primary/20 transition-colors"
-                    >
-                      <Save size={14} />
-                    </button>
+                        <button
+                          onClick={() => saveOfficerEdit(officer.id)}
+                          className="p-1.5 rounded-lg text-app-primary hover:bg-app-primary/10 dark:hover:bg-app-primary/20 transition-colors"
+                        >
+                          <Save size={14} />
+                        </button>
 
-                    <button
-                      onClick={cancelEditOfficer}
-                      className="p-1.5 rounded-lg text-app-muted hover:bg-stone-100 dark:hover:bg-stone-700 dark:text-slate-300 transition-colors"
-                    >
-                      <X size={14} />
-                    </button>
+                        <button
+                          onClick={cancelEditOfficer}
+                          className="p-1.5 rounded-lg text-app-muted hover:bg-stone-100 dark:hover:bg-stone-700 dark:text-slate-300 transition-colors"
+                        >
+                          <X size={14} />
+                        </button>
+                      </>
+                    ) : (
+                      <p className="text-[10px] font-bold text-app-muted">Mode baca</p>
+                    )}
                   </div>
                 ) : (
                   <>
@@ -106,27 +121,29 @@ export default function PetugasView({
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1 ml-2">
-                      <button
-                        onClick={() => startEditOfficer(officer)}
-                        className="p-1.5 rounded-lg text-app-primary hover:bg-app-primary/10 dark:hover:bg-app-primary/20 transition-colors"
-                        title="Edit nama"
-                      >
-                        <Pencil size={14} />
-                      </button>
+                    {isSuperadmin && (
+                      <div className="flex items-center gap-1 ml-2">
+                        <button
+                          onClick={() => startEditOfficer(officer)}
+                          className="p-1.5 rounded-lg text-app-primary hover:bg-app-primary/10 dark:hover:bg-app-primary/20 transition-colors"
+                          title="Edit nama"
+                        >
+                          <Pencil size={14} />
+                        </button>
 
-                      <button
-                        onClick={() => {
-                          if (window.confirm(`Hapus petugas "${officer.name}"?`)) {
-                            deleteOfficer(officer.id, officer.name);
-                          }
-                        }}
-                        className="p-1.5 rounded-lg text-app-error hover:bg-rose-50 dark:hover:bg-rose-900/40 transition-colors"
-                        title="Hapus"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`Hapus petugas "${officer.name}"?`)) {
+                              deleteOfficer(officer.id, officer.name);
+                            }
+                          }}
+                          className="p-1.5 rounded-lg text-app-error hover:bg-rose-50 dark:hover:bg-rose-900/40 transition-colors"
+                          title="Hapus"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    )}
                   </>
                 )}
                 <span

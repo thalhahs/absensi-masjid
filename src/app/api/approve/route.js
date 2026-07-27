@@ -42,7 +42,8 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    const { token } = await request.json();
+    const body = await request.json().catch(() => ({}));
+    const { token, officerId, replacement } = body;
 
     if (!token) {
       return Response.json(
@@ -96,12 +97,82 @@ export async function POST(request) {
     const status =
       currentMinutes <= windowEndMinutes ? "HADIR" : "TERLAMBAT";
 
+    let officerName = qrToken.officer_name || "Unknown";
+    let officerRole = qrToken.role || "Imam";
+
+    // If this is a replacement scan, look up the officer and check assignment
+    if (officerId && replacement) {
+      const { data: officerData, error: officerError } = await supabase
+        .from("officers")
+        .select("id, name, role")
+        .eq("id", officerId)
+        .single();
+
+      if (officerError || !officerData) {
+        return Response.json(
+          { success: false, message: "Petugas tidak ditemukan" },
+          { status: 404 }
+        );
+      }
+
+      officerName = officerData.name;
+      officerRole = officerData.role || officerRole;
+
+      // Check if this officer is already assigned to this prayer
+      const { data: assignment, error: assignmentError } = await supabase
+        .from("schedule_assignments")
+        .select("*")
+        .eq("date", qrToken.attendance_date)
+        .eq("prayer_id", qrToken.prayer)
+        .or(`imam_id.eq.${officerId},muadzin_id.eq.${officerId},badal_imam_id.eq.${officerId}`)
+        .single();
+
+      if (assignmentError || !assignment) {
+        // Officer is not assigned - return options for replacement
+        const { data: allAssignments, error: allAssignmentsError } = await supabase
+          .from("schedule_assignments")
+          .select("imam_id, muadzin_id, badal_imam_id")
+          .eq("date", qrToken.attendance_date)
+          .eq("prayer_id", qrToken.prayer)
+          .single();
+
+        if (allAssignmentsError || !allAssignments) {
+          return Response.json(
+            { success: false, message: "Jadwal shalat tidak ditemukan" },
+            { status: 404 }
+          );
+        }
+
+        const options = [];
+        if (allAssignments.imam_id) {
+          const { data: imam } = await supabase.from("officers").select("id, name, role").eq("id", allAssignments.imam_id).single();
+          if (imam) options.push(imam);
+        }
+        if (allAssignments.muadzin_id) {
+          const { data: muadzin } = await supabase.from("officers").select("id, name, role").eq("id", allAssignments.muadzin_id).single();
+          if (muadzin) options.push(muadzin);
+        }
+        if (allAssignments.badal_imam_id) {
+          const { data: badal } = await supabase.from("officers").select("id, name, role").eq("id", allAssignments.badal_imam_id).single();
+          if (badal) options.push(badal);
+        }
+
+        return Response.json({
+          success: false,
+          needsReplacement: true,
+          message: "Anda tidak dijadwalkan pada waktu ini",
+          options,
+        });
+      }
+    }
+
     const { data: attendanceData, error: insertError } = await supabase
       .from("attendance")
       .insert([
         {
-          officer_name: qrToken.officer_name,
-          role: qrToken.role,
+          officer_id: officerId || null,
+          officer_name: officerName,
+          role: officerRole,
           prayer: qrToken.prayer,
           prayer_time: qrToken.prayer_time,
           status,

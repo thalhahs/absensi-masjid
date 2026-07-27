@@ -14,6 +14,8 @@ export default function RiwayatView({
   setHistoryFilterDate,
   setHistoryFilterOfficer,
   exportHistoryCSV,
+  _role,
+  _isSuperadmin,
 }) {
   const getBadgeStyles = (status) => {
     const styles = {

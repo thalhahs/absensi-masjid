@@ -23,6 +23,8 @@ export default function JadwalView({
   addAssignmentForm,
   setAddAssignmentForm,
   createAssignment,
+  role,
+  isSuperadmin,
 }) {
   const grouped = allAssignments.reduce((acc, item) => {
     if (!acc[item.date]) {
@@ -150,6 +152,11 @@ export default function JadwalView({
           >
             Batal
           </button>
+        )}
+        {!isSuperadmin && (
+          <span className="text-[10px] font-bold text-app-muted">
+            Mode Baca
+          </span>
         )}
       </div>
 
@@ -687,41 +694,45 @@ export default function JadwalView({
                           </div>
 
                           <div className="flex items-center gap-1 ml-3">
-                            <button
-                              onClick={() => startEditAssignment(item)}
-                              className="
-                                p-2
-                                rounded-xl
-                                text-app-primary
-                                hover:bg-app-primary/10
-                                dark:hover:bg-app-primary/20
-                                transition-all
-                                active:scale-95
-                              "
-                              title="Edit"
-                            >
-                              <Pencil size={14} />
-                            </button>
+                            {isSuperadmin && (
+                              <>
+                                <button
+                                  onClick={() => startEditAssignment(item)}
+                                  className="
+                                    p-2
+                                    rounded-xl
+                                    text-app-primary
+                                    hover:bg-app-primary/10
+                                    dark:hover:bg-app-primary/20
+                                    transition-all
+                                    active:scale-95
+                                  "
+                                  title="Edit"
+                                >
+                                  <Pencil size={14} />
+                                </button>
 
-                            <button
-                              onClick={() => {
-                                if (window.confirm('Hapus jadwal ini?')) {
-                                  deleteAssignment(item.id);
-                                }
-                              }}
-                              className="
-                                p-2
-                                rounded-xl
-                                text-app-error
-                                hover:bg-rose-50
-                                dark:hover:bg-rose-900/40
-                                transition-all
-                                active:scale-95
-                              "
-                              title="Hapus"
-                            >
-                              <Trash2 size={14} />
-                            </button>
+                                <button
+                                  onClick={() => {
+                                    if (window.confirm('Hapus jadwal ini?')) {
+                                      deleteAssignment(item.id);
+                                    }
+                                  }}
+                                  className="
+                                    p-2
+                                    rounded-xl
+                                    text-app-error
+                                    hover:bg-rose-50
+                                    dark:hover:bg-rose-900/40
+                                    transition-all
+                                    active:scale-95
+                                  "
+                                  title="Hapus"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
                       );

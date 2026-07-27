@@ -8,6 +8,8 @@ const SKELETON_STATISTIK = [1, 2, 3];
 export default function StatistikView({
   statsData,
   statsLoading,
+  role,
+  isSuperadmin,
 }) {
   if (statsLoading) {
     return (
@@ -38,10 +40,17 @@ export default function StatistikView({
 
   return (
     <main className="flex-1 glass-strong rounded-3xl shadow-sm p-4 overflow-auto border border-stone-200/80 dark:border-stone-700/60">
-      <h2 className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight mb-4">
-        <BarChart3 size={16} className="inline mr-1.5 mb-0.5 text-app-primary" />
-        Statistik Petugas
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight">
+          <BarChart3 size={16} className="inline mr-1.5 mb-0.5 text-app-primary" />
+          Statistik Petugas
+        </h2>
+        {!isSuperadmin && (
+          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full border border-stone-200 dark:border-stone-700 text-app-muted">
+            Mode Baca
+          </span>
+        )}
+      </div>
 
       {statsData.length === 0 ? (
         <div className="text-center py-16">
