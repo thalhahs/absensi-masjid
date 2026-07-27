@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Lock, Shield } from 'lucide-react';
 import { setSession, clearSession, getSession } from '@/lib/session';
 
