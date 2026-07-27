@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Lock, Shield } from 'lucide-react';
 import { setSession, clearSession, getSession } from '@/lib/session';
 
@@ -10,14 +10,21 @@ export default function PinGate({ children }) {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(() => {
+    const session = getSession();
+    if (session?.expiresAt && Date.now() > session.expiresAt) {
+      try { clearSession(); } catch {}
+      return false;
+    }
+    return !!session;
+  });
+
+  const loadingRef = useRef(false);
+  const authenticatedRef = useRef(authenticated);
 
   useEffect(() => {
-    const session = getSession();
-    if (session && session.expiresAt && Date.now() > session.expiresAt) {
-      clearSession();
-    }
-  }, []);
+    authenticatedRef.current = authenticated;
+  }, [authenticated]);
 
   const handlePinChange = useCallback((value) => {
     const cleaned = value.replace(/[^0-9]/g, '').slice(0, PIN_LENGTH);
@@ -25,49 +32,51 @@ export default function PinGate({ children }) {
     setError('');
   }, []);
 
-  useEffect(() => {
-    if (pin.length !== PIN_LENGTH || loading || authenticated) return;
-
-    let cancelled = false;
+  const submitPin = useCallback((pinToSubmit) => {
+    if (loadingRef.current || authenticatedRef.current) return;
+    loadingRef.current = true;
     setLoading(true);
-    setError('');
 
     fetch('/api/auth/pin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin }),
+      body: JSON.stringify({ pin: pinToSubmit }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
-        if (cancelled) return;
-        console.log('PIN login response:', data);
         if (data?.success) {
           setSession(data.session);
           setAuthenticated(true);
         } else {
           setError(data?.message || 'PIN salah');
+          setPin('');
           setLoading(false);
+          loadingRef.current = false;
         }
       })
       .catch((err) => {
-        if (cancelled) return;
         console.error('Login error:', err);
         setError('Gagal terhubung ke server');
+        setPin('');
         setLoading(false);
+        loadingRef.current = false;
       });
+  }, []);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [pin, loading, authenticated]);
+  const fillDigit = useCallback((digit) => {
+    const newPin = pin + digit;
+    handlePinChange(newPin);
+    if (newPin.length === PIN_LENGTH) {
+      submitPin(newPin);
+    }
+  }, [pin, handlePinChange, submitPin]);
 
-  const fillDigit = (digit) => {
-    handlePinChange(pin + digit);
-  };
-
-  const clearPin = () => {
+  const clearPin = useCallback(() => {
     handlePinChange('');
-  };
+  }, [handlePinChange]);
 
   if (authenticated) {
     return children;

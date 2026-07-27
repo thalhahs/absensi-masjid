@@ -49,7 +49,7 @@ export function isAuthenticated() {
   return !!getSession();
 }
 
-export function setSession({ officerId, name, role }) {
+export function setSession({ officerId, name, role, expiresAt }) {
   if (typeof window === 'undefined') {
     return;
   }
@@ -57,7 +57,7 @@ export function setSession({ officerId, name, role }) {
     officerId,
     name: name || '',
     role: role || 'officer',
-    expiresAt: Date.now() + SESSION_TTL,
+    expiresAt: expiresAt || Date.now() + SESSION_TTL,
   };
   window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
