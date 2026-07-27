@@ -227,6 +227,9 @@ export default function MosqueApp() {
 
   const [statsLoading, setStatsLoading] = useState(false);
 
+  const [activeQrOfficer, setActiveQrOfficer] = useState(null);
+  const [scannedOfficers, setScannedOfficers] = useState(new Set());
+
   const fetchedDateRef = useRef(null);
 
   const fetchedAssignmentsDateRef = useRef(null);
@@ -1487,7 +1490,7 @@ export default function MosqueApp() {
       {/* KONTEN */}
 
       <div className="flex-1 overflow-auto mt-3">
-        {currentView === "presensi" && <PresensiView sortedOfficers={sortedOfficers} schedules={schedules} selectedPrayer={selectedPrayer} setSelectedPrayer={setSelectedPrayer} currentSchedule={currentSchedule} currentTime={currentTime} reminderNotification={reminderNotification} isReminderMuted={isReminderMuted} setReminderNotification={setReminderNotification} setIsReminderMuted={setIsReminderMuted} getOfficerMeta={getOfficerMeta} generateQrCode={generateQrCode} qrSuccessNotification={qrSuccessNotification} setQrSuccessNotification={setQrSuccessNotification} suppressReminders={suppressReminders} />}
+        {currentView === "presensi" && <PresensiView sortedOfficers={sortedOfficers} schedules={schedules} selectedPrayer={selectedPrayer} setSelectedPrayer={setSelectedPrayer} currentSchedule={currentSchedule} currentTime={currentTime} reminderNotification={reminderNotification} isReminderMuted={isReminderMuted} setReminderNotification={setReminderNotification} setIsReminderMuted={setIsReminderMuted} getOfficerMeta={getOfficerMeta} generateQrCode={generateQrCode} qrSuccessNotification={qrSuccessNotification} setQrSuccessNotification={setQrSuccessNotification} suppressReminders={suppressReminders} activeQrOfficer={activeQrOfficer} setActiveQrOfficer={setActiveQrOfficer} scannedOfficers={scannedOfficers} setScannedOfficers={setScannedOfficers} />}
 
         {currentView === "riwayat" && <RiwayatView history={history} historyLoading={historyLoading} historyFilterDate={historyFilterDate} historyFilterOfficer={historyFilterOfficer} officers={officers} setHistoryFilterDate={setHistoryFilterDate} setHistoryFilterOfficer={setHistoryFilterOfficer} exportHistoryCSV={exportHistoryCSV} />}
 

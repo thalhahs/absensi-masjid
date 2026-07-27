@@ -45,6 +45,10 @@ export default function PresensiView({
   qrSuccessNotification,
   setQrSuccessNotification,
   suppressReminders,
+  activeQrOfficer,
+  setActiveQrOfficer,
+  scannedOfficers,
+  setScannedOfficers,
 }) {
   const [qrModal, setQrModal] = useState({
     isOpen: false,
@@ -110,24 +114,44 @@ export default function PresensiView({
     return () => clearInterval(interval);
   }, [qrModal.token, qrModal.isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [toastData, setToastData] = useState(null);
+
+  useEffect(() => {
+    if (qrSuccessNotification) {
+      setToastData(qrSuccessNotification);
+      setShowSuccessToast(true);
+
+      const timer = setTimeout(() => {
+        setShowSuccessToast(false);
+        setQrSuccessNotification?.(null);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [qrSuccessNotification, setQrSuccessNotification]);
+
   return (
     <>
-      {/* QR Success Notification */}
-      {qrSuccessNotification && (
-        <div className="relative overflow-hidden rounded-3xl p-4 shadow-lg flex items-start gap-3 shrink-0 border border-stone-200 dark:border-stone-700 bg-white dark:bg-slate-800 mt-2 mb-3 animate-bounce-in">
-          <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-100 to-green-100 dark:from-emerald-900/50 dark:to-green-900/50 text-emerald-600 dark:text-emerald-400 shrink-0">
-            <Check size={20} className="stroke-[2.5]" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-extrabold uppercase tracking-wider text-app-muted mb-0.5">
-              Absensi Berhasil
-            </p>
-            <p className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight">
-              {qrSuccessNotification.officerName} - {qrSuccessNotification.role}
-            </p>
-            <p className="text-[11px] font-medium text-app-muted mt-0.5">
-              {qrSuccessNotification.prayer} - {qrSuccessNotification.prayerTime} WIB
-            </p>
+      {/* Floating Success Toast */}
+      {showSuccessToast && toastData && (
+        <div className="fixed inset-x-4 top-4 sm:left-auto sm:right-4 sm:w-80 z-50 animate-bounce-in">
+          <div className="relative overflow-hidden rounded-2xl p-4 shadow-xl flex items-start gap-3 border border-stone-200 dark:border-stone-700 bg-white dark:bg-slate-800">
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 to-transparent dark:from-emerald-900/20 dark:to-transparent" />
+            <div className="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-100 to-green-100 dark:from-emerald-900/50 dark:to-green-900/50 text-emerald-600 dark:text-emerald-400 shrink-0">
+              <Check size={20} className="stroke-[2.5]" />
+            </div>
+            <div className="relative flex-1 min-w-0">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-app-muted mb-0.5">
+                Absensi Berhasil
+              </p>
+              <p className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight">
+                {toastData.officerName} - {toastData.role}
+              </p>
+              <p className="text-[11px] font-medium text-app-muted mt-0.5">
+                {toastData.prayer} - {toastData.prayerTime} WIB
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -283,10 +307,8 @@ export default function PresensiView({
               <div
                 key={officer.id}
                 className="group flex items-center justify-between p-3.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-stone-100 dark:border-stone-700/50 rounded-2xl hover:bg-stone-50/80 dark:hover:bg-stone-800/80 transition-all duration-200 active:scale-[0.98] border-l-4"
-                style={{
-                  borderLeftColor: meta.roleTitle === 'Imam' ? '#f59e0b' : meta.roleTitle === 'Muadzin' ? '#06b6d4' : '#10b981',
-                }}
               >
+
                 <div className="flex items-center gap-3 min-w-0">
                   {/* Avatar with role icon */}
                   <div className={`flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br ${roleStyle.gradient} ${roleStyle.iconColor} shadow-sm border border-white/60 dark:border-white/5 shrink-0`}>
@@ -322,24 +344,36 @@ export default function PresensiView({
 
                 {meta.scanRole && (
                   <button
-                    disabled={!meta.windowOpen}
+                    disabled={
+                      !meta.windowOpen ||
+                      Boolean(activeQrOfficer && activeQrOfficer !== officer.name) ||
+                      scannedOfficers.has(officer.name)
+                    }
 
                     onClick={async () => {
-                      const result = await generateQrCode(
-                        officer.name,
-                        meta.scanRole,
-                        currentSchedule
-                      );
-                      if (result?.success && result.token) {
-                        setQrModal({
-                          isOpen: true,
-                          officerName: officer.name,
-                          role: meta.scanRole,
-                          prayer: currentSchedule.name || currentSchedule.id,
-                          prayerTime: currentSchedule.time,
-                          token: result.token,
-                          expiresAt: result.expiresAt,
-                        });
+                      if (!meta.windowOpen) return;
+                      try {
+                        setActiveQrOfficer(officer.name);
+                        const result = await generateQrCode(
+                          officer.name,
+                          meta.scanRole,
+                          currentSchedule
+                        );
+                        if (result?.success && result.token) {
+                          setQrModal({
+                            isOpen: true,
+                            officerName: officer.name,
+                            role: meta.scanRole,
+                            prayer: currentSchedule.name || currentSchedule.id,
+                            prayerTime: currentSchedule.time,
+                            token: result.token,
+                            expiresAt: result.expiresAt,
+                          });
+                        } else {
+                          setActiveQrOfficer(null);
+                        }
+                      } catch {
+                        setActiveQrOfficer(null);
                       }
                     }}
 
@@ -352,16 +386,27 @@ export default function PresensiView({
                       duration-200
                       overflow-hidden
 
-                      ${meta.windowOpen
-                        ? "gradient-brown text-white shadow-md hover:shadow-lg active:scale-95"
-                        : "bg-slate-100 text-slate-300 cursor-not-allowed dark:bg-slate-700 dark:text-slate-400 border border-stone-200 dark:border-stone-700"
+                      ${
+                        scannedOfficers.has(officer.name)
+                          ? "bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/60 cursor-not-allowed"
+                          : activeQrOfficer === officer.name
+                            ? "gradient-brown text-white shadow-md hover:shadow-lg active:scale-95"
+                            : activeQrOfficer && activeQrOfficer !== officer.name
+                              ? "bg-slate-50 text-slate-300 cursor-not-allowed border border-stone-200 dark:bg-slate-800 dark:text-slate-500 dark:border-stone-700"
+                              : meta.windowOpen
+                                ? "gradient-brown text-white shadow-md hover:shadow-lg active:scale-95"
+                                : "bg-slate-100 text-slate-300 cursor-not-allowed dark:bg-slate-700 dark:text-slate-400 border border-stone-200 dark:border-stone-700"
                       }
                     `}
                   >
-                    {meta.windowOpen && (
+                    {activeQrOfficer === officer.name && meta.windowOpen && (
                       <span className="absolute inset-0 bg-white/20 animate-pulse rounded-2xl" />
                     )}
-                    <QrCode size={26} className="relative" />
+                    {scannedOfficers.has(officer.name) ? (
+                      <Check size={26} className="relative stroke-[2.5]" />
+                    ) : (
+                      <QrCode size={26} className="relative" />
+                    )}
                   </button>
                 )}
               </div>
@@ -371,9 +416,10 @@ export default function PresensiView({
       </main>
       <QrCodeModal
         isOpen={qrModal.isOpen}
-        onClose={() =>
-          setQrModal((prev) => ({ ...prev, isOpen: false }))
-        }
+        onClose={() => {
+          setQrModal((prev) => ({ ...prev, isOpen: false }));
+          setActiveQrOfficer(null);
+        }}
         token={qrModal.token}
         officerName={qrModal.officerName}
         prayer={qrModal.prayer}
