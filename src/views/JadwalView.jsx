@@ -153,20 +153,11 @@ export default function JadwalView({
 
       {showAddAssignmentForm && (
         <div
-          className="
-            bg-white dark:bg-slate-800
-            border
-            border-app-border dark:border-slate-700
-            rounded-2xl
-            shadow-sm
-            p-3
-            mb-3
-            space-y-2
-          "
+          className="card-base p-4 mb-3 space-y-3 animate-slide-up"
         >
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[10px] text-app-muted font-bold uppercase tracking-wide">
+              <label className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
                 Tanggal
               </label>
               <input
@@ -177,25 +168,28 @@ export default function JadwalView({
                 }
 
                 className="
-                  mt-1
+                  mt-1.5
                   w-full
                   text-xs
                   border
-                  border-app-border
+                  border-stone-200
+                  dark:border-stone-700
                   rounded-xl
-                  px-2.5
+                  px-3
                   py-2
-                  bg-white dark:bg-slate-700 dark:text-slate-100
+                  bg-white/80 dark:bg-slate-800/80
+                  text-app-text
                   font-medium
                   focus:outline-none
                   focus:ring-2
                   focus:ring-app-primary/30
+                  transition-all
                 "
               />
             </div>
 
             <div>
-              <label className="text-[10px] text-app-muted font-bold uppercase tracking-wide">
+              <label className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
                 Shalat
               </label>
               <select
@@ -205,19 +199,22 @@ export default function JadwalView({
                 }
 
                 className="
-                  mt-1
+                  mt-1.5
                   w-full
                   text-xs
                   border
-                  border-app-border
+                  border-stone-200
+                  dark:border-stone-700
                   rounded-xl
-                  px-2.5
+                  px-3
                   py-2
-                  bg-white dark:bg-slate-700 dark:text-slate-100
+                  bg-white/80 dark:bg-slate-800/80
+                  text-app-text
                   font-medium
                   focus:outline-none
                   focus:ring-2
                   focus:ring-app-primary/30
+                  transition-all
                 "
               >
                 <option value="subuh">Subuh</option>
@@ -229,7 +226,7 @@ export default function JadwalView({
             </div>
 
             <div>
-              <label className="text-[10px] text-app-muted font-bold uppercase tracking-wide">
+              <label className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
                 Imam
               </label>
               <select
@@ -239,19 +236,22 @@ export default function JadwalView({
                 }
 
                 className="
-                  mt-1
+                  mt-1.5
                   w-full
                   text-xs
                   border
-                  border-app-border
+                  border-stone-200
+                  dark:border-stone-700
                   rounded-xl
-                  px-2.5
+                  px-3
                   py-2
-                  bg-white dark:bg-slate-700 dark:text-slate-100
+                  bg-white/80 dark:bg-slate-800/80
+                  text-app-text
                   font-medium
                   focus:outline-none
                   focus:ring-2
                   focus:ring-app-primary/30
+                  transition-all
                 "
               >
                 <option value="">- Pilih -</option>
@@ -264,7 +264,7 @@ export default function JadwalView({
             </div>
 
             <div>
-              <label className="text-[10px] text-app-muted font-bold uppercase tracking-wide">
+              <label className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
                 Muadzin
               </label>
               <select
@@ -274,19 +274,22 @@ export default function JadwalView({
                 }
 
                 className="
-                  mt-1
+                  mt-1.5
                   w-full
                   text-xs
                   border
-                  border-app-border
+                  border-stone-200
+                  dark:border-stone-700
                   rounded-xl
-                  px-2.5
+                  px-3
                   py-2
-                  bg-white dark:bg-slate-700 dark:text-slate-100
+                  bg-white/80 dark:bg-slate-800/80
+                  text-app-text
                   font-medium
                   focus:outline-none
                   focus:ring-2
                   focus:ring-app-primary/30
+                  transition-all
                 "
               >
                 <option value="">- Pilih -</option>
@@ -299,7 +302,7 @@ export default function JadwalView({
             </div>
 
             <div className="col-span-2">
-              <label className="text-[10px] text-app-muted font-bold uppercase tracking-wide">
+              <label className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
                 Badal Imam
               </label>
               <select
@@ -309,19 +312,22 @@ export default function JadwalView({
                 }
 
                 className="
-                  mt-1
+                  mt-1.5
                   w-full
                   text-xs
                   border
-                  border-app-border
+                  border-stone-200
+                  dark:border-stone-700
                   rounded-xl
-                  px-2.5
+                  px-3
                   py-2
-                  bg-white dark:bg-slate-700 dark:text-slate-100
+                  bg-white/80 dark:bg-slate-800/80
+                  text-app-text
                   font-medium
                   focus:outline-none
                   focus:ring-2
                   focus:ring-app-primary/30
+                  transition-all
                 "
               >
                 <option value="">- Pilih -</option>
@@ -339,14 +345,14 @@ export default function JadwalView({
               onClick={createAssignment}
               className="
                 flex-1
-                bg-app-primary
+                gradient-brown
                 text-white
-                py-2
+                py-2.5
                 rounded-xl
                 text-xs
                 font-bold
-                shadow-sm
-                hover:bg-app-primary-dark
+                shadow-md
+                hover:shadow-lg
                 active:scale-95
                 transition-all
               "
@@ -357,15 +363,15 @@ export default function JadwalView({
               onClick={() => setShowAddAssignmentForm(false)}
               className="
                 flex-1
-                bg-white dark:bg-slate-700
+                bg-white/80 dark:bg-slate-800/80
                 text-app-muted dark:text-slate-200
                 border
-                border-app-border dark:border-slate-600
-                py-2
+                border-stone-200 dark:border-stone-700
+                py-2.5
                 rounded-xl
                 text-xs
                 font-bold
-                hover:bg-slate-50 dark:hover:bg-slate-600
+                hover:bg-stone-50 dark:hover:bg-stone-800
                 active:scale-95
                 transition-all
               "
@@ -377,26 +383,15 @@ export default function JadwalView({
       )}
 
       {allAssignmentsLoading ? (
-        <div
-          className="
-            text-center
-            py-8
-            text-xs
-            text-app-muted
-          "
-        >
-          Memuat jadwal...
+        <div className="text-center py-12">
+          <div className="inline-block w-8 h-8 border-2 border-app-primary border-t-transparent rounded-full animate-spin mb-2" />
+          <p className="text-xs text-app-muted">Memuat jadwal...</p>
         </div>
       ) : sortedDates.length === 0 ? (
-        <div
-          className="
-            text-center
-            py-8
-            text-xs
-            text-app-muted
-          "
-        >
-          Belum ada jadwal. Import CSV untuk menambahkan.
+        <div className="text-center py-12">
+          <p className="text-2xl mb-2 opacity-30">📅</p>
+          <p className="text-xs text-app-muted">Belum ada jadwal</p>
+          <p className="text-[10px] text-app-muted mt-1">Klik + Tambah Jadwal untuk memulai</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -447,7 +442,7 @@ export default function JadwalView({
                 </button>
 
                 {isExpanded && (
-                  <div className="divide-y divide-app-border">
+                  <div className="divide-y divide-stone-100 dark:divide-stone-700/60">
                     {items.map((item) => {
                       const isEditing = editingAssignmentId === item.id;
 
@@ -456,14 +451,15 @@ export default function JadwalView({
                           <div
                             key={item.id}
                             className="
-                              p-3
-                              bg-app-bg/50
-                              space-y-2
+                              p-4
+                              bg-stone-50/50
+                              dark:bg-stone-900/30
+                              space-y-3
                             "
                           >
                             <div className="grid grid-cols-1 gap-2">
                               <div>
-                                <label className="text-[10px] text-app-muted font-bold uppercase tracking-wide">
+                                <label className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
                                   Imam
                                 </label>
 
@@ -477,19 +473,22 @@ export default function JadwalView({
                                   }
 
                                   className="
-                                    mt-1
+                                    mt-1.5
                                     w-full
                                     text-xs
                                     border
-                                    border-app-border
+                                    border-stone-200
+                                    dark:border-stone-700
                                     rounded-xl
-                                    px-2.5
+                                    px-3
                                     py-2
-                                    bg-white dark:bg-slate-700 dark:text-slate-100
+                                    bg-white/80 dark:bg-slate-800/80
+                                    text-app-text
                                     font-medium
                                     focus:outline-none
                                     focus:ring-2
                                     focus:ring-app-primary/30
+                                    transition-all
                                   "
                                 >
                                   <option value="">- Pilih -</option>
@@ -503,7 +502,7 @@ export default function JadwalView({
                               </div>
 
                               <div>
-                                <label className="text-[10px] text-app-muted font-bold uppercase tracking-wide">
+                                <label className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
                                   Muadzin
                                 </label>
 
@@ -517,19 +516,22 @@ export default function JadwalView({
                                   }
 
                                   className="
-                                    mt-1
+                                    mt-1.5
                                     w-full
                                     text-xs
                                     border
-                                    border-app-border
+                                    border-stone-200
+                                    dark:border-stone-700
                                     rounded-xl
-                                    px-2.5
+                                    px-3
                                     py-2
-                                    bg-white dark:bg-slate-700 dark:text-slate-100
+                                    bg-white/80 dark:bg-slate-800/80
+                                    text-app-text
                                     font-medium
                                     focus:outline-none
                                     focus:ring-2
                                     focus:ring-app-primary/30
+                                    transition-all
                                   "
                                 >
                                   <option value="">- Pilih -</option>
@@ -543,7 +545,7 @@ export default function JadwalView({
                               </div>
 
                               <div>
-                                <label className="text-[10px] text-app-muted font-bold uppercase tracking-wide">
+                                <label className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
                                   Badal Imam
                                 </label>
 
@@ -557,19 +559,22 @@ export default function JadwalView({
                                   }
 
                                   className="
-                                    mt-1
+                                    mt-1.5
                                     w-full
                                     text-xs
                                     border
-                                    border-app-border
+                                    border-stone-200
+                                    dark:border-stone-700
                                     rounded-xl
-                                    px-2.5
+                                    px-3
                                     py-2
-                                    bg-white dark:bg-slate-700 dark:text-slate-100
+                                    bg-white/80 dark:bg-slate-800/80
+                                    text-app-text
                                     font-medium
                                     focus:outline-none
                                     focus:ring-2
                                     focus:ring-app-primary/30
+                                    transition-all
                                   "
                                 >
                                   <option value="">- Pilih -</option>
@@ -588,19 +593,19 @@ export default function JadwalView({
                                 onClick={() => saveAssignmentEdit(item.id)}
                                 className="
                                   flex-1
-                                  bg-app-primary
+                                  gradient-brown
                                   text-white
-                                  py-2
+                                  py-2.5
                                   rounded-xl
                                   text-xs
                                   font-bold
-                                  shadow-sm
-                                  hover:bg-app-primary-dark
+                                  shadow-md
+                                  hover:shadow-lg
                                   active:scale-95
                                   transition-all
                                 "
                               >
-                                <Save size={14} className="inline mr-1 mb-0.5" />
+                                <Save size={14} className="inline mr-1.5 mb-0.5" />
                                 Simpan
                               </button>
 
@@ -608,20 +613,20 @@ export default function JadwalView({
                                 onClick={cancelEditAssignment}
                                 className="
                                   flex-1
-                                  bg-white dark:bg-slate-700
+                                  bg-white/80 dark:bg-slate-800/80
                                   text-app-muted dark:text-slate-200
                                   border
-                                  border-app-border dark:border-slate-600
-                                  py-2
+                                  border-stone-200 dark:border-stone-700
+                                  py-2.5
                                   rounded-xl
                                   text-xs
                                   font-bold
-                                  hover:bg-slate-50 dark:hover:bg-slate-600
+                                  hover:bg-stone-50 dark:hover:bg-stone-800
                                   active:scale-95
                                   transition-all
                                 "
                               >
-                                <X size={14} className="inline mr-1 mb-0.5" />
+                                <X size={14} className="inline mr-1.5 mb-0.5" />
                                 Batal
                               </button>
                             </div>
@@ -636,32 +641,51 @@ export default function JadwalView({
                             flex
                             items-center
                             justify-between
-                            px-3
-                            py-2.5
+                            px-4
+                            py-3
+                            hover:bg-stone-50/60
+                            dark:hover:bg-stone-800/40
+                            transition-colors
+                            border-b
+                            border-stone-100
+                            dark:border-stone-700/50
+                            last:border-b-0
                           "
                         >
-                          <div className="flex-1">
-                            <p className="text-xs font-bold text-app-text dark:text-slate-100">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-app-text dark:text-slate-100 tracking-tight">
                               {prayerLabels[item.prayer_id] || item.prayer_id}
                             </p>
-
-                            <div className="text-[10px] text-app-muted dark:text-slate-400 font-medium mt-0.5 space-x-2">
-                              <span>Imam: {item.imam?.name || '-'}</span>
-                              <span>Muadzin: {item.muadzin?.name || '-'}</span>
-                              <span>Badal: {item.badal?.name || '-'}</span>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
+                              {item.imam?.name && (
+                                <span className="text-[10px] font-medium text-app-muted">
+                                  Imam: <span className="text-app-text dark:text-slate-300">{item.imam.name}</span>
+                                </span>
+                              )}
+                              {item.muadzin?.name && (
+                                <span className="text-[10px] font-medium text-app-muted">
+                                  Muadzin: <span className="text-app-text dark:text-slate-300">{item.muadzin.name}</span>
+                                </span>
+                              )}
+                              {item.badal?.name && (
+                                <span className="text-[10px] font-medium text-app-muted">
+                                  Badal: <span className="text-app-text dark:text-slate-300">{item.badal.name}</span>
+                                </span>
+                              )}
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-1.5 ml-3">
+                          <div className="flex items-center gap-1 ml-3">
                             <button
                               onClick={() => startEditAssignment(item)}
                               className="
-                                p-1.5
-                                rounded-lg
+                                p-2
+                                rounded-xl
                                 text-app-primary
                                 hover:bg-app-primary/10
                                 dark:hover:bg-app-primary/20
-                                transition-colors
+                                transition-all
+                                active:scale-95
                               "
                               title="Edit"
                             >
@@ -675,12 +699,13 @@ export default function JadwalView({
                                 }
                               }}
                               className="
-                                p-1.5
-                                rounded-lg
+                                p-2
+                                rounded-xl
                                 text-app-error
                                 hover:bg-rose-50
                                 dark:hover:bg-rose-900/40
-                                transition-colors
+                                transition-all
+                                active:scale-95
                               "
                               title="Hapus"
                             >
