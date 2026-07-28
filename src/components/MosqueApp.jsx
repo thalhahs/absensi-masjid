@@ -1695,6 +1695,30 @@ export default function MosqueApp() {
           <UserPlus size={14} />
           Petugas
         </button>
+        <button
+          onClick={() => setCurrentView("profile")}
+          className={`
+            flex-1
+            flex
+            items-center
+            justify-center
+            gap-1
+            py-2.5
+            rounded-2xl
+            text-[10px]
+            font-bold
+            transition-all
+            duration-300
+            
+            ${currentView === "profile"
+              ? "bg-gradient-to-r from-[#7D5A41] to-[#D3AF96] text-white shadow-md scale-[1.02]"
+              : "text-app-muted hover:bg-white hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:shadow-none"
+            }
+          `}
+        >
+          <UserCheck size={14} />
+          Profile
+        </button>
       </div>
     </div>
   );
