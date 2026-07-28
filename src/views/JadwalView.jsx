@@ -112,55 +112,9 @@ export default function JadwalView({
         >
           Refresh
         </button>
-
-        {!showAddAssignmentForm ? (
-          <button
-            onClick={() => setShowAddAssignmentForm(true)}
-            className="
-              text-[10px]
-              bg-app-primary
-              text-white
-              px-2.5
-              py-1
-              rounded-lg
-              font-bold
-              shadow-sm
-              hover:bg-app-primary-dark
-              active:scale-95
-              transition-all
-            "
-          >
-            + Tambah Jadwal
-          </button>
-        ) : (
-          <button
-            onClick={() => setShowAddAssignmentForm(false)}
-            className="
-              text-[10px]
-              bg-white dark:bg-slate-700
-              text-app-muted dark:text-slate-200
-              border
-              border-app-border dark:border-slate-600
-              px-2.5
-              py-1
-              rounded-lg
-              font-bold
-              hover:bg-slate-50 dark:hover:bg-slate-600
-              active:scale-95
-              transition-all
-            "
-          >
-            Batal
-          </button>
-        )}
-        {!isSuperadmin && (
-          <span className="text-[10px] font-bold text-app-muted">
-            Mode Baca
-          </span>
-        )}
       </div>
 
-      {showAddAssignmentForm && (
+      {isSuperadmin && showAddAssignmentForm && (
         <div
           className="card-base p-4 mb-3 space-y-3 animate-slide-up"
         >
@@ -409,7 +363,7 @@ export default function JadwalView({
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
           </svg>
           <p className="text-xs font-extrabold text-app-text dark:text-slate-200">Belum ada jadwal</p>
-          <p className="text-[10px] text-app-muted mt-1">Klik + Tambah Jadwal untuk memulai</p>
+          <p className="text-[10px] text-app-muted mt-1">Belum ada jadwal</p>
         </div>
       ) : (
         <div className="space-y-2">
