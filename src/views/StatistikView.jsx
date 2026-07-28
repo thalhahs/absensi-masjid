@@ -8,9 +8,8 @@ const SKELETON_STATISTIK = [1, 2, 3];
 export default function StatistikView({
   statsData,
   statsLoading,
-  // role removed
-  // isSuperadmin removed
-  officerName,
+  role,
+  isSuperadmin,
 }) {
   if (statsLoading) {
     return (

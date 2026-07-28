@@ -1533,7 +1533,7 @@ export default function MosqueApp() {
           />
         )}
 
-{currentView === "statistik" && <StatistikView statsData={statsData} statsLoading={statsLoading} role={currentRole} isSuperadmin={isSuperadmin} />}
+{currentView === "statistik" && <StatistikView statsData={isSuperadmin ? statsData : statsData.filter(s => s.name === session?.name)} statsLoading={statsLoading} role={currentRole} isSuperadmin={isSuperadmin} />}
          {currentView === "profile" && <ProfileView history={history} officers={officers} session={session} onLogout={() => { clearSession(); window.location.reload(); }} setHistoryFilterDate={setHistoryFilterDate} setHistoryFilterOfficer={setHistoryFilterOfficer} exportHistoryCSV={exportHistoryCSV} />}
        </div>
 
@@ -1640,10 +1640,11 @@ export default function MosqueApp() {
           Jadwal
         </button>
 
-        <button
-          onClick={() => setCurrentView("statistik")}
+        {isSuperadmin && (
+          <button
+            onClick={() => setCurrentView("statistik")}
 
-          className={`
+            className={`
   flex-1
   flex
   items-center
@@ -1663,10 +1664,11 @@ export default function MosqueApp() {
   }
   
   `}
-        >
-          <BarChart3 size={14} />
-          Statistik
-        </button>
+          >
+            <BarChart3 size={14} />
+            Statistik
+          </button>
+        )}
 
         <button
           onClick={() => setCurrentView("petugas")}

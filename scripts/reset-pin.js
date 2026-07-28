@@ -1,5 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+const envPath = join(process.cwd(), '.env.local');
+try {
+  const envContent = readFileSync(envPath, 'utf8');
+  envContent.split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+    const [key, ...valueParts] = trimmed.split('=');
+    if (key && valueParts.length) {
+      const value = valueParts.join('=');
+      if (!process.env[key]) {
+        process.env[key] = value;
+      }
+    }
+  });
+} catch (err) {
+  console.error('Failed to read .env.local:', err.message);
+  process.exit(1);
+}
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
