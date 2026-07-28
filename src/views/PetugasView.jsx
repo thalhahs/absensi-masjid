@@ -34,32 +34,37 @@ export default function PetugasView({
             </p>
           </div>
         )}
-        <label className="block text-[10px] font-bold text-app-muted uppercase tracking-wider mb-1.5">
-          Nama Petugas
-        </label>
 
-        <div className="mt-1.5 flex gap-2">
-          <input
-            type="text"
-            placeholder="Contoh: Ustadz Ahmad"
-            value={newOfficerName}
-            onChange={(e) => setNewOfficerName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                addOfficer();
-              }
-            }}
-            className="flex-1 text-xs border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 bg-white/80 dark:bg-slate-800/80 text-app-text font-medium focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all"
-          />
+        {isSuperadmin && (
+          <>
+            <label className="block text-[10px] font-bold text-app-muted uppercase tracking-wider mb-1.5">
+              Nama Petugas
+            </label>
 
-          <button
-            onClick={addOfficer}
-            disabled={addingOfficer}
-            className="gradient-brown text-white px-5 py-2.5 rounded-xl text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg active:scale-95 transition-all"
-          >
-            {addingOfficer ? "Menyimpan..." : "Tambah"}
-          </button>
-        </div>
+            <div className="mt-1.5 flex gap-2">
+              <input
+                type="text"
+                placeholder="Contoh: Ustadz Ahmad"
+                value={newOfficerName}
+                onChange={(e) => setNewOfficerName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    addOfficer();
+                  }
+                }}
+                className="flex-1 text-xs border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 bg-white/80 dark:bg-slate-800/80 text-app-text font-medium focus:outline-none focus:ring-2 focus:ring-app-primary/30 transition-all"
+              />
+
+              <button
+                onClick={addOfficer}
+                disabled={addingOfficer}
+                className="gradient-brown text-white px-5 py-2.5 rounded-xl text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg active:scale-95 transition-all"
+              >
+                {addingOfficer ? "Menyimpan..." : "Tambah"}
+              </button>
+            </div>
+          </>
+        )}
 
         <div className="mt-5">
           <h3 className="text-[10px] font-bold text-app-muted uppercase tracking-wider mb-2.5">
