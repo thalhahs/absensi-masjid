@@ -431,7 +431,7 @@ export default function MosqueApp() {
         if (asgn.badal) {
           expectedAttendance.push({
             officer_name: asgn.badal.name,
-            role: "Badal Imam",
+            role: "Badal",
             prayer,
             attendance_date: date,
           });
@@ -1061,7 +1061,7 @@ export default function MosqueApp() {
     let scanRole = null;
 
     if (isImam) {
-      roleTitle = "Imam Utama";
+      roleTitle = "Imam";
       scanRole = "Imam";
     }
 
@@ -1071,8 +1071,8 @@ export default function MosqueApp() {
     }
 
     if (isBadal) {
-      roleTitle = "Badal Imam";
-      scanRole = "Badal Imam";
+      roleTitle = "Badal";
+      scanRole = "Badal";
     }
 
     const windowOpen =

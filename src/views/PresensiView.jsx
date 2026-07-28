@@ -287,7 +287,7 @@ export default function PresensiView({
                 borderLeft: "cyan",
                 badge: "bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800/60",
               },
-              "Badal Imam": {
+              "Badal": {
                 icon: Shield,
                 gradient: "from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30",
                 iconColor: "text-emerald-600 dark:text-emerald-400",
@@ -299,7 +299,7 @@ export default function PresensiView({
             };
 
             const roleStyle =
-              roleConfig[meta.roleTitle] || roleConfig["Badal Imam"];
+              roleConfig[meta.roleTitle] || roleConfig["Badal"];
 
             const RoleIcon = roleStyle.icon;
 

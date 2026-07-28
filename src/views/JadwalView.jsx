@@ -312,7 +312,7 @@ export default function JadwalView({
 
             <div className="col-span-2">
               <label className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
-                Badal Imam
+                Badal
               </label>
               <select
                 value={addAssignmentForm.badal_imam_id}
@@ -564,7 +564,7 @@ export default function JadwalView({
 
                               <div>
                                 <label className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
-                                  Badal Imam
+                Badal
                                 </label>
 
                                 <select
