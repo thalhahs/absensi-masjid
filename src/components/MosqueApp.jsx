@@ -1654,10 +1654,11 @@ export default function MosqueApp() {
           </button>
         )}
 
-        <button
-          onClick={() => setCurrentView("petugas")}
+        {isSuperadmin && (
+          <button
+            onClick={() => setCurrentView("petugas")}
 
-          className={`
+            className={`
   flex-1
   flex
   items-center
@@ -1674,9 +1675,10 @@ export default function MosqueApp() {
   }
   
   `}
-        >
-          <UserPlus size={18} />
-        </button>
+          >
+            <UserPlus size={18} />
+          </button>
+        )}
         <button
           onClick={() => setCurrentView("profile")}
           className={`
