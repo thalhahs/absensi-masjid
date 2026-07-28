@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Lock, Shield } from 'lucide-react';
+import { Lock, Shield, User } from 'lucide-react';
 import { setSession, clearSession, getSession } from '@/lib/session';
+import { supabase } from '@/lib/supabase';
 
 const PIN_LENGTH = 6;
 
 export default function PinGate({ children }) {
+  const [officers, setOfficers] = useState([]);
+  const [officersLoading, setOfficersLoading] = useState(true);
+  const [selectedOfficer, setSelectedOfficer] = useState(null);
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,13 +30,34 @@ export default function PinGate({ children }) {
     authenticatedRef.current = authenticated;
   }, [authenticated]);
 
+  useEffect(() => {
+    const fetchOfficers = async () => {
+      setOfficersLoading(true);
+      const { data, error } = await supabase
+        .from('officers')
+        .select('id, name, role, active')
+        .eq('active', true)
+        .order('name', { ascending: true });
+
+      if (error || !data) {
+        console.error('Failed to fetch officers:', error);
+        setOfficers([]);
+      } else {
+        setOfficers(data || []);
+      }
+      setOfficersLoading(false);
+    };
+
+    fetchOfficers();
+  }, []);
+
   const handlePinChange = useCallback((value) => {
     const cleaned = value.replace(/[^0-9]/g, '').slice(0, PIN_LENGTH);
     setPin(cleaned);
     setError('');
   }, []);
 
-  const submitPin = useCallback((pinToSubmit) => {
+  const submitPin = useCallback((pinToSubmit, officer) => {
     if (loadingRef.current || authenticatedRef.current) return;
     loadingRef.current = true;
     setLoading(true);
@@ -48,7 +73,13 @@ export default function PinGate({ children }) {
       })
       .then((data) => {
         if (data?.success) {
-          setSession(data.session);
+          const sessionPayload = {
+            officerId: officer.id,
+            name: officer.name,
+            role: officer.role || 'officer',
+            expiresAt: Date.now() + (24 * 60 * 60 * 1000),
+          };
+          setSession(sessionPayload);
           setAuthenticated(true);
         } else {
           setError(data?.message || 'PIN salah');
@@ -69,14 +100,20 @@ export default function PinGate({ children }) {
   const fillDigit = useCallback((digit) => {
     const newPin = pin + digit;
     handlePinChange(newPin);
-    if (newPin.length === PIN_LENGTH) {
-      submitPin(newPin);
+    if (newPin.length === PIN_LENGTH && selectedOfficer) {
+      submitPin(newPin, selectedOfficer);
     }
-  }, [pin, handlePinChange, submitPin]);
+  }, [pin, handlePinChange, submitPin, selectedOfficer]);
 
   const clearPin = useCallback(() => {
     handlePinChange('');
   }, [handlePinChange]);
+
+  const selectOfficer = (officer) => {
+    setSelectedOfficer(officer);
+    setPin('');
+    setError('');
+  };
 
   if (authenticated) {
     return children;
@@ -93,84 +130,132 @@ export default function PinGate({ children }) {
             Masuk Aplikasi
           </h1>
           <p className="text-[10px] font-bold text-app-muted uppercase tracking-wider mt-1">
-            Masukkan PIN Petugas
+            {selectedOfficer ? `Masukkan PIN untuk ${selectedOfficer.name}` : 'Pilih akun Anda'}
           </p>
         </div>
 
         <div className="bg-white dark:bg-slate-800 border border-stone-200 dark:border-stone-700 rounded-3xl p-5 shadow-lg">
-          <div className="flex items-center justify-center gap-1 mb-5">
-            <Lock size={14} className="text-app-muted" />
-            <span className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
-              {PIN_LENGTH} Digit PIN
-            </span>
-          </div>
-
-          <div className="flex items-center justify-center gap-2 mb-4">
-            {Array.from({ length: PIN_LENGTH }).map((_, i) => (
-              <div
-                key={i}
-                className={`
-                  w-10 h-12 rounded-xl border-2 flex items-center justify-center text-lg font-bold
-                  transition-all duration-200
-                  ${i < pin.length
-                    ? 'border-app-primary bg-app-primary/5 dark:bg-app-primary/10 text-app-text'
-                    : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-slate-800'
-                  }
-                `}
-              >
-                {i < pin.length ? '●' : ''}
+          {!selectedOfficer ? (
+            <>
+              <div className="flex items-center justify-center gap-1 mb-4">
+                <User size={14} className="text-app-muted" />
+                <span className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
+                  Daftar Petugas
+                </span>
               </div>
-            ))}
-          </div>
 
-          {error && (
-            <div className="text-center mb-3">
-              <p className="text-[10px] font-bold text-app-error">{error}</p>
-            </div>
+              {officersLoading ? (
+                <div className="text-center py-8">
+                  <div className="inline-block w-5 h-5 border-2 border-app-primary border-t-transparent rounded-full animate-spin" />
+                  <p className="text-[10px] text-app-muted mt-2">Memuat data...</p>
+                </div>
+              ) : officers.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-xs text-app-muted">Tidak ada petugas tersedia</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[50vh] overflow-auto">
+                  {officers.map((officer) => (
+                    <button
+                      key={officer.id}
+                      onClick={() => selectOfficer(officer)}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors text-left"
+                    >
+                      <div className="bg-app-primary/10 dark:bg-app-primary/20 text-app-primary dark:text-app-primary-light p-2 rounded-xl">
+                        <User size={18} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-app-text dark:text-slate-100 truncate">
+                          {officer.name}
+                        </p>
+                        <p className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
+                          {officer.role === 'superadmin' ? 'Superadmin' : 'Petugas'}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-center gap-1 mb-5">
+                <Lock size={14} className="text-app-muted" />
+                <span className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
+                  {PIN_LENGTH} Digit PIN
+                </span>
+              </div>
+
+              <div className="flex items-center justify-center gap-2 mb-4">
+                {Array.from({ length: PIN_LENGTH }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`
+                      w-10 h-12 rounded-xl border-2 flex items-center justify-center text-lg font-bold
+                      transition-all duration-200
+                      ${i < pin.length
+                        ? 'border-app-primary bg-app-primary/5 dark:bg-app-primary/10 text-app-text'
+                        : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-slate-800'
+                      }
+                    `}
+                  >
+                    {i < pin.length ? '●' : ''}
+                  </div>
+                ))}
+              </div>
+
+              {error && (
+                <div className="text-center mb-3">
+                  <p className="text-[10px] font-bold text-app-error">{error}</p>
+                </div>
+              )}
+
+              {loading && (
+                <div className="text-center mb-3">
+                  <div className="inline-block w-5 h-5 border-2 border-app-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+
+              <div className="grid grid-cols-3 gap-2">
+                {['1', '2', '3', '4', '5', '6', '7', '8', '9', '←', '0', 'C'].map((key) => {
+                  const isBackspace = key === '←';
+                  const isClear = key === 'C';
+
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        if (isClear) {
+                          clearPin();
+                        } else if (isBackspace) {
+                          handlePinChange(pin.slice(0, -1));
+                        } else {
+                          fillDigit(key);
+                        }
+                      }}
+                      disabled={loading}
+                      className={`
+                        h-12 rounded-xl text-sm font-bold transition-all duration-200
+                        active:scale-95 disabled:opacity-50
+                        ${isClear || isBackspace
+                          ? 'bg-stone-100 dark:bg-stone-700 text-app-muted border border-stone-200 dark:border-stone-600'
+                          : 'bg-white dark:bg-slate-700 text-app-text border border-stone-200 dark:border-stone-600 hover:bg-stone-50 dark:hover:bg-slate-600'
+                        }
+                      `}
+                    >
+                      {isClear ? 'Hapus' : key}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           )}
-
-          {loading && (
-            <div className="text-center mb-3">
-              <div className="inline-block w-5 h-5 border-2 border-app-primary border-t-transparent rounded-full animate-spin" />
-            </div>
-          )}
-
-          <div className="grid grid-cols-3 gap-2">
-            {['1', '2', '3', '4', '5', '6', '7', '8', '9', '←', '0', 'C'].map((key) => {
-              const isBackspace = key === '←';
-              const isClear = key === 'C';
-
-              return (
-                <button
-                  key={key}
-                  onClick={() => {
-                    if (isClear) {
-                      clearPin();
-                    } else if (isBackspace) {
-                      handlePinChange(pin.slice(0, -1));
-                    } else {
-                      fillDigit(key);
-                    }
-                  }}
-                  disabled={loading}
-                  className={`
-                    h-12 rounded-xl text-sm font-bold transition-all duration-200
-                    active:scale-95 disabled:opacity-50
-                    ${isClear || isBackspace
-                      ? 'bg-stone-100 dark:bg-stone-700 text-app-muted border border-stone-200 dark:border-stone-600'
-                      : 'bg-white dark:bg-slate-700 text-app-text border border-stone-200 dark:border-stone-600 hover:bg-stone-50 dark:hover:bg-slate-600'
-                    }
-                  `}
-                >
-                  {isClear ? 'Hapus' : key}
-                </button>
-              );
-            })}
-          </div>
         </div>
 
         <p className="text-center text-[10px] text-app-muted mt-4 font-medium">
-          Masukkan PIN 6 digit untuk mengakses aplikasi
+          {selectedOfficer
+            ? `Login sebagai ${selectedOfficer.name}`
+            : 'Pilih akun terlebih dahulu, lalu masukkan PIN'}
         </p>
       </div>
     </div>

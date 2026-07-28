@@ -152,6 +152,7 @@ import PresensiView from "@/views/PresensiView";
 import RiwayatView from "@/views/RiwayatView";
 import JadwalView from "@/views/JadwalView";
 import ProfileView from "@/views/ProfileView";
+import StatistikView from "@/views/StatistikView";
 
 export default function MosqueApp() {
   const [currentTime, setCurrentTime] = useState(null);
@@ -1534,7 +1535,7 @@ export default function MosqueApp() {
         )}
 
 {currentView === "statistik" && <StatistikView statsData={statsData} statsLoading={statsLoading} role={currentRole} isSuperadmin={isSuperadmin} />}
-         {currentView === "profile" && <ProfileView history={history} officers={officers} session={session} setHistoryFilterDate={setHistoryFilterDate} setHistoryFilterOfficer={setHistoryFilterOfficer} exportHistoryCSV={exportHistoryCSV} />}
+         {currentView === "profile" && <ProfileView history={history} officers={officers} session={session} onLogout={() => { clearSession(); setCurrentView("presensi"); }} setHistoryFilterDate={setHistoryFilterDate} setHistoryFilterOfficer={setHistoryFilterOfficer} exportHistoryCSV={exportHistoryCSV} />}
        </div>
 
       {/* TAB NAVIGASI */}
