@@ -32,7 +32,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="id" className={`${plusJakarta.variable} ${inter.variable} ${jetbrains.variable}`}>
-      <body className={`antialiased ${inter.className}`}>{children}</body>
+      <body className={`antialiased ${inter.className} overflow-hidden`}>{children}</body>
     </html>
   );
 }
