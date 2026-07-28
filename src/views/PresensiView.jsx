@@ -146,7 +146,7 @@ export default function PresensiView({
                 Absensi Berhasil
               </p>
               <p className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight">
-                {toastData.officerName} - {toastData.role}
+                {toastData.officerName}
               </p>
               <p className="text-[11px] font-medium text-app-muted mt-0.5">
                 {toastData.prayer} - {toastData.prayerTime} WIB
@@ -319,21 +319,6 @@ export default function PresensiView({
                     <p className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight leading-tight truncate">
                       {officer.name}
                     </p>
-                    <span
-                      className={`
-                        text-[10px]
-                        font-bold
-                        px-2
-                        py-0.5
-                        rounded-full
-                        inline-block
-                        mt-1
-                        border
-                        ${roleStyle.badge}
-                      `}
-                    >
-                      {meta.roleTitle}
-                    </span>
                   </div>
                 </div>
 
