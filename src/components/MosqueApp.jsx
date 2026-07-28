@@ -1564,11 +1564,8 @@ export default function MosqueApp() {
   flex
   items-center
   justify-center
-  gap-1
   py-2.5
   rounded-2xl
-  text-[10px]
-  font-bold
   transition-all
   duration-300
   
@@ -1580,8 +1577,7 @@ export default function MosqueApp() {
 
   `}
         >
-          <Fingerprint size={14} />
-          Presensi
+          <Fingerprint size={18} />
         </button>
 
         <button
@@ -1592,11 +1588,8 @@ export default function MosqueApp() {
   flex
   items-center
   justify-center
-  gap-1
   py-2.5
   rounded-2xl
-  text-[10px]
-  font-bold
   transition-all
   duration-300
   
@@ -1608,8 +1601,7 @@ export default function MosqueApp() {
   
   `}
         >
-          <History size={14} />
-          Riwayat
+          <History size={18} />
         </button>
 
         <button
@@ -1620,11 +1612,8 @@ export default function MosqueApp() {
   flex
   items-center
   justify-center
-  gap-1
   py-2.5
   rounded-2xl
-  text-[10px]
-  font-bold
   transition-all
   duration-300
   
@@ -1636,8 +1625,7 @@ export default function MosqueApp() {
   
   `}
         >
-          <CalendarDays size={14} />
-          Jadwal
+          <CalendarDays size={18} />
         </button>
 
         {isSuperadmin && (
@@ -1649,11 +1637,8 @@ export default function MosqueApp() {
   flex
   items-center
   justify-center
-  gap-1
   py-2.5
   rounded-2xl
-  text-[10px]
-  font-bold
   transition-all
   duration-300
   
@@ -1665,8 +1650,7 @@ export default function MosqueApp() {
   
   `}
           >
-            <BarChart3 size={14} />
-            Statistik
+            <BarChart3 size={18} />
           </button>
         )}
 
@@ -1678,11 +1662,8 @@ export default function MosqueApp() {
   flex
   items-center
   justify-center
-  gap-1
   py-2.5
   rounded-2xl
-  text-[10px]
-  font-bold
   transition-all
   duration-300
   
@@ -1694,8 +1675,7 @@ export default function MosqueApp() {
   
   `}
         >
-          <UserPlus size={14} />
-          Petugas
+          <UserPlus size={18} />
         </button>
         <button
           onClick={() => setCurrentView("profile")}
@@ -1704,11 +1684,8 @@ export default function MosqueApp() {
             flex
             items-center
             justify-center
-            gap-1
             py-2.5
             rounded-2xl
-            text-[10px]
-            font-bold
             transition-all
             duration-300
             
@@ -1718,8 +1695,7 @@ export default function MosqueApp() {
             }
           `}
         >
-          <UserCheck size={14} />
-          Profile
+          <UserCheck size={18} />
         </button>
       </div>
     </div>
