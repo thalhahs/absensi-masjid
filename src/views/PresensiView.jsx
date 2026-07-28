@@ -344,7 +344,7 @@ export default function PresensiView({
                       try {
                         const foundOfficer = sortedOfficers.find(o => o.name === session?.name);
                         const result = await generateQrCode(
-                          currentSchedule.name || currentSchedule.id,
+                          foundOfficer?.name || session?.name || 'Unknown',
                           foundOfficer?.id || null,
                           meta.scanRole,
                           currentSchedule

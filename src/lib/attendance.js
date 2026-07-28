@@ -55,6 +55,15 @@ export function isWithinWindow(role, now, adzanTime, prayerId) {
 export function validateScan(role, now, adzanTime, prayerId) {
   const scanMinutes = getDateMinutes(now);
   const timeStr = minutesToTimeStr(scanMinutes);
+
+  if (!adzanTime || adzanTime === '--:--') {
+    return {
+      allowed: false,
+      reason: 'Jadwal shalat belum diisi',
+      timeStr,
+    };
+  }
+
   const { start, end, adzan, label } = getAttendanceWindow(role, adzanTime, prayerId);
 
   if (scanMinutes < start) {

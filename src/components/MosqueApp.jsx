@@ -1147,12 +1147,16 @@ export default function MosqueApp() {
 
   const generateQrCode = async (officerName, officerId, role, schedule) => {
     const now = new Date();
+    console.log('[QR] generateQrCode called', { officerName, officerId, role, scheduleTime: schedule?.time, scheduleId: schedule?.id, now: now.toISOString() });
+
     const result = validateScan(
       role,
       now,
       schedule.time,
       schedule.id,
     );
+
+    console.log('[QR] validateScan result', result);
 
     if (!result.allowed) {
       showError(result.reason);
@@ -1176,20 +1180,22 @@ export default function MosqueApp() {
       expiresAt.setDate(expiresAt.getDate() + 1);
     }
 
+    const payload = {
+      token,
+      officer_id: officerId || null,
+      officer_name: officerName,
+      role,
+      prayer: schedule.name || schedule.id,
+      prayer_time: schedule.time,
+      attendance_date: dateStr,
+      expires_at: expiresAt.toISOString(),
+    };
+
+    console.log('[QR] inserting payload', payload);
+
     const { error: insertError } = await supabase
       .from("qr_tokens")
-      .insert([
-        {
-          token,
-          officer_id: officerId || null,
-          officer_name: officerName,
-          role,
-          prayer: schedule.name || schedule.id,
-          prayer_time: schedule.time,
-          attendance_date: dateStr,
-          expires_at: expiresAt.toISOString(),
-        },
-      ])
+      .insert([payload])
       .select();
 
     if (insertError) {
@@ -1197,6 +1203,8 @@ export default function MosqueApp() {
       showError("Gagal membuat QR code");
       return { success: false, message: "Gagal membuat QR code" };
     }
+
+    console.log('[QR] insert success', { token, expiresAt: expiresAt.toISOString() });
 
     return {
       success: true,
