@@ -319,6 +319,21 @@ export default function PresensiView({
                     <p className="text-sm font-extrabold text-app-text dark:text-slate-100 tracking-tight leading-tight truncate">
                       {officer.name}
                     </p>
+                    <span
+                      className={`
+                        text-[10px]
+                        font-bold
+                        px-2
+                        py-0.5
+                        rounded-full
+                        inline-block
+                        mt-1
+                        border
+                        ${roleStyle.badge}
+                      `}
+                    >
+                      {meta.roleTitle}
+                    </span>
                   </div>
                 </div>
 
