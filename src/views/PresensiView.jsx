@@ -344,34 +344,34 @@ export default function PresensiView({
 
                 {meta.scanRole && !prayerQr.isActive && (
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={async () => {
-                        try {
-                          const foundOfficer = sortedOfficers.find(o => o.name === session?.name);
-                          const result = await generateQrCode(
-                            currentSchedule.name || currentSchedule.id,
-                            foundOfficer?.id || null,
-                            meta.scanRole,
-                            currentSchedule
-                          );
-                          if (result?.success && result.token) {
-                            setPrayerQr({
-                              isActive: true,
-                              token: result.token,
-                              prayer: currentSchedule.name || currentSchedule.id,
-                              prayerTime: currentSchedule.time,
-                              generatedAt: Date.now(),
-                            });
-                          }
-                        } catch (err) {
-                          console.error('Failed to generate QR', err);
+                  <button
+                    onClick={async () => {
+                      try {
+                        const foundOfficer = sortedOfficers.find(o => o.name === session?.name);
+                        const result = await generateQrCode(
+                          currentSchedule.name || currentSchedule.id,
+                          foundOfficer?.id || null,
+                          meta.scanRole,
+                          currentSchedule
+                        );
+                        if (result?.success && result.token) {
+                          setPrayerQr({
+                            isActive: true,
+                            token: result.token,
+                            prayer: currentSchedule.name || currentSchedule.id,
+                            prayerTime: currentSchedule.time,
+                            generatedAt: Date.now(),
+                          });
                         }
-                      }}
-                      className="gradient-brown text-white px-4 py-2.5 rounded-xl text-[10px] font-bold shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center gap-2"
-                    >
-                      <QrCode size={16} />
-                      Tampilkan QR {currentSchedule?.name || ''}
-                    </button>
+                      } catch (err) {
+                        console.error('Failed to generate QR', err);
+                      }
+                    }}
+                    className="gradient-brown text-white p-2.5 rounded-xl text-[10px] font-bold shadow-md hover:shadow-lg active:scale-95 transition-all"
+                    title="Tampilkan QR"
+                  >
+                    <QrCode size={18} />
+                  </button>
                   </div>
                 )}
               </div>
