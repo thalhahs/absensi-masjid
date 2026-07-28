@@ -334,11 +334,6 @@ export default function PresensiView({
                     >
                       {meta.roleTitle}
                     </span>
-                    {meta.scanRole && (
-                      <p className="text-[10px] text-app-muted font-medium mt-1">
-                        {meta.windowLabel}
-                      </p>
-                    )}
                   </div>
                 </div>
 
