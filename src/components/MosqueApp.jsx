@@ -1535,7 +1535,7 @@ export default function MosqueApp() {
         )}
 
 {currentView === "statistik" && <StatistikView statsData={statsData} statsLoading={statsLoading} role={currentRole} isSuperadmin={isSuperadmin} />}
-         {currentView === "profile" && <ProfileView history={history} officers={officers} session={session} onLogout={() => { clearSession(); setCurrentView("presensi"); }} setHistoryFilterDate={setHistoryFilterDate} setHistoryFilterOfficer={setHistoryFilterOfficer} exportHistoryCSV={exportHistoryCSV} />}
+         {currentView === "profile" && <ProfileView history={history} officers={officers} session={session} onLogout={() => { clearSession(); window.dispatchEvent(new Event('app:logout')); }} setHistoryFilterDate={setHistoryFilterDate} setHistoryFilterOfficer={setHistoryFilterOfficer} exportHistoryCSV={exportHistoryCSV} />}
        </div>
 
       {/* TAB NAVIGASI */}

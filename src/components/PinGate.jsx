@@ -31,6 +31,18 @@ export default function PinGate({ children }) {
   }, [authenticated]);
 
   useEffect(() => {
+    const handleLogout = () => {
+      setAuthenticated(false);
+      setSelectedOfficer(null);
+      setPin('');
+      setError('');
+    };
+
+    window.addEventListener('app:logout', handleLogout);
+    return () => window.removeEventListener('app:logout', handleLogout);
+  }, []);
+
+  useEffect(() => {
     const fetchOfficers = async () => {
       setOfficersLoading(true);
       const { data, error } = await supabase
