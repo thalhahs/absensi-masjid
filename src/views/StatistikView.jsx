@@ -45,11 +45,6 @@ export default function StatistikView({
           <BarChart3 size={16} className="inline mr-1.5 mb-0.5 text-app-primary" />
           Statistik Petugas
         </h2>
-        {!isSuperadmin && (
-          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full border border-stone-200 dark:border-stone-700 text-app-muted">
-            Mode Baca
-          </span>
-        )}
       </div>
 
       {statsData.length === 0 ? (

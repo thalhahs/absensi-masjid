@@ -110,9 +110,7 @@ export default function PetugasView({
                           <X size={14} />
                         </button>
                       </>
-                    ) : (
-                      <p className="text-[10px] font-bold text-app-muted">Mode baca</p>
-                    )}
+                    ) : null}
                   </div>
                 ) : (
                   <>
