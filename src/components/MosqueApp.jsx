@@ -1295,7 +1295,7 @@ export default function MosqueApp() {
   px-5
   py-4
   rounded-3xl
-  shadow-lg shadow-purple-200 dark:shadow-black/40
+  shadow-lg shadow-stone-200 dark:shadow-black/40
   flex
   items-center
   justify-between
@@ -1334,7 +1334,7 @@ export default function MosqueApp() {
             <p
               className="
    text-[10px]
-   text-purple-100
+   text-white
    font-semibold
    mt-0.5
    dark:text-slate-300
