@@ -30,26 +30,27 @@ function getIqomahCountdown(adzanTime, prayerId, now) {
 }
 
 export default function PresensiView({
-  sortedOfficers,
-  schedules,
-  selectedPrayer,
-  setSelectedPrayer,
-  currentSchedule,
-  currentTime,
-  reminderNotification,
-  isReminderMuted,
-  setReminderNotification,
-  setIsReminderMuted,
-  getOfficerMeta,
-  generateQrCode,
-  qrSuccessNotification,
-  setQrSuccessNotification,
-  suppressReminders,
-  role,
-  isSuperadmin,
-  showError,
-  session,
-}) {
+   sortedOfficers,
+   schedules,
+   selectedPrayer,
+   setSelectedPrayer,
+   currentSchedule,
+   currentTime,
+   reminderNotification,
+   isReminderMuted,
+   setReminderNotification,
+   setIsReminderMuted,
+   getOfficerMeta,
+   generateQrCode,
+   qrSuccessNotification,
+   setQrSuccessNotification,
+   suppressReminders,
+   role,
+   isSuperadmin,
+   canGenerateQR,
+   showError,
+   session,
+ }) {
   const [prayerQr, setPrayerQr] = useState({
     isActive: false,
     token: '',
@@ -337,7 +338,7 @@ export default function PresensiView({
                   </div>
                 </div>
 
-                {isSuperadmin && meta.scanRole && !prayerQr.isActive && (
+                {canGenerateQR && meta.scanRole && !prayerQr.isActive && (
                   <div className="flex items-center gap-2">
                   <button
                     onClick={async () => {

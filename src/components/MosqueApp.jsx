@@ -249,6 +249,7 @@ export default function MosqueApp() {
 
   const currentRole = session?.role || 'superadmin';
   const isSuperadmin = currentRole === 'superadmin';
+  const canGenerateQR = currentRole === 'superadmin' || currentRole === 'masjid';
 
   const fetchedDateRef = useRef(null);
 
@@ -1159,9 +1160,9 @@ export default function MosqueApp() {
   };
 
   const generateQrCode = async (officerName, officerId, role, schedule) => {
-    if (!isSuperadmin) {
-      showError("Hanya superadmin yang dapat membuat QR code");
-      return { success: false, message: "Hanya superadmin yang dapat membuat QR code" };
+    if (!canGenerateQR) {
+      showError("Hanya superadmin atau masjid yang dapat membuat QR code");
+      return { success: false, message: "Hanya superadmin atau masjid yang dapat membuat QR code" };
     }
 
     const now = new Date();
@@ -1534,7 +1535,7 @@ export default function MosqueApp() {
       {/* KONTEN */}
 
       <div className="flex-1 overflow-auto mt-3">
-        {currentView === "presensi" && <PresensiView sortedOfficers={sortedOfficers} schedules={schedules} selectedPrayer={selectedPrayer} setSelectedPrayer={setSelectedPrayer} currentSchedule={currentSchedule} currentTime={currentTime} reminderNotification={reminderNotification} isReminderMuted={isReminderMuted} setReminderNotification={setReminderNotification} setIsReminderMuted={setIsReminderMuted} getOfficerMeta={getOfficerMeta} generateQrCode={generateQrCode} qrSuccessNotification={qrSuccessNotification} setQrSuccessNotification={setQrSuccessNotification} suppressReminders={suppressReminders} showError={showError} session={session} role={currentRole} isSuperadmin={isSuperadmin} />}
+        {currentView === "presensi" && <PresensiView sortedOfficers={sortedOfficers} schedules={schedules} selectedPrayer={selectedPrayer} setSelectedPrayer={setSelectedPrayer} currentSchedule={currentSchedule} currentTime={currentTime} reminderNotification={reminderNotification} isReminderMuted={isReminderMuted} setReminderNotification={setReminderNotification} setIsReminderMuted={setIsReminderMuted} getOfficerMeta={getOfficerMeta} generateQrCode={generateQrCode} qrSuccessNotification={qrSuccessNotification} setQrSuccessNotification={setQrSuccessNotification} suppressReminders={suppressReminders} showError={showError} session={session} role={currentRole} isSuperadmin={isSuperadmin} canGenerateQR={canGenerateQR} />}
 
         {currentView === "riwayat" && <RiwayatView history={history} historyLoading={historyLoading} historyFilterDate={historyFilterDate} historyFilterOfficer={historyFilterOfficer} officers={officers} setHistoryFilterDate={setHistoryFilterDate} setHistoryFilterOfficer={setHistoryFilterOfficer} exportHistoryCSV={exportHistoryCSV} />}
 
@@ -1606,53 +1607,57 @@ export default function MosqueApp() {
           <Fingerprint size={18} />
         </button>
 
-        <button
-          onClick={() => setCurrentView("riwayat")}
+{(currentRole === 'superadmin' || currentRole === 'officer') && (
+         <button
+           onClick={() => setCurrentView("riwayat")}
+ 
+           className={`
+   flex-1
+   flex
+   items-center
+   justify-center
+   py-2.5
+   rounded-2xl
+   transition-all
+   duration-300
+   
+   ${
+     currentView === "riwayat"
+       ? "bg-gradient-to-r from-[#7D5A41] to-[#D3AF96] text-white shadow-md scale-[1.02]"
+       : "text-app-muted hover:bg-white hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:shadow-none"
+   }
+   
+   `}
+         >
+           <History size={18} />
+         </button>
+       )}
 
-          className={`
-  flex-1
-  flex
-  items-center
-  justify-center
-  py-2.5
-  rounded-2xl
-  transition-all
-  duration-300
-  
-  ${
-    currentView === "riwayat"
-      ? "bg-gradient-to-r from-[#7D5A41] to-[#D3AF96] text-white shadow-md scale-[1.02]"
-      : "text-app-muted hover:bg-white hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:shadow-none"
-  }
-  
-  `}
-        >
-          <History size={18} />
-        </button>
-
-        <button
-          onClick={() => setCurrentView("jadwal")}
-
-          className={`
-  flex-1
-  flex
-  items-center
-  justify-center
-  py-2.5
-  rounded-2xl
-  transition-all
-  duration-300
-  
-  ${
-    currentView === "jadwal"
-      ? "bg-gradient-to-r from-[#7D5A41] to-[#D3AF96] text-white shadow-md scale-[1.02]"
-      : "text-app-muted hover:bg-white hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:shadow-none"
-  }
-  
-  `}
-        >
-          <CalendarDays size={18} />
-        </button>
+{isSuperadmin && (
+         <button
+           onClick={() => setCurrentView("jadwal")}
+ 
+           className={`
+   flex-1
+   flex
+   items-center
+   justify-center
+   py-2.5
+   rounded-2xl
+   transition-all
+   duration-300
+   
+   ${
+     currentView === "jadwal"
+       ? "bg-gradient-to-r from-[#7D5A41] to-[#D3AF96] text-white shadow-md scale-[1.02]"
+       : "text-app-muted hover:bg-white hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-700/60 dark:hover:shadow-none"
+   }
+   
+   `}
+         >
+           <CalendarDays size={18} />
+         </button>
+       )}
 
         {isSuperadmin && (
           <button
