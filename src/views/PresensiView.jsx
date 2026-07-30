@@ -84,6 +84,8 @@ export default function PresensiView({
 
   const [isScanning, setIsScanning] = useState(false);
   const [scanSuccess, setScanSuccess] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraError, setCameraError] = useState('');
   const videoRef = React.useRef(null);
   const canvasRef = React.useRef(null);
   const scanStreamRef = React.useRef(null);
@@ -480,7 +482,7 @@ export default function PresensiView({
                   </div>
                 )}
 
-                {!isSuperadmin && !canGenerateQR && officer.id === session?.officerId && meta.scanRole && (
+                {!isSuperadmin && !canGenerateQR && officer.id === session?.officerId && meta.scanRole && meta.windowOpen && (
                   <button
                     onClick={startScanning}
                     className="gradient-brown text-white p-2.5 rounded-xl text-[10px] font-bold shadow-md hover:shadow-lg active:scale-95 transition-all"
@@ -529,12 +531,21 @@ export default function PresensiView({
                 className="w-full h-full object-cover"
               />
               <canvas ref={canvasRef} className="hidden" />
+              {!cameraReady && !cameraError && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <p className="text-white text-xs">Memuat kamera...</p>
+                </div>
+              )}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-48 h-48 border-2 border-white/80 rounded-2xl" />
               </div>
             </div>
 
-            {scanError && (
+            {cameraError && (
+              <p className="text-[10px] text-rose-500 text-center mb-3">{cameraError}</p>
+            )}
+
+            {scanError && !cameraError && (
               <p className="text-[10px] text-rose-500 text-center mb-3">{scanError}</p>
             )}
 
