@@ -267,12 +267,6 @@ export default function MosqueApp() {
 
   const schedulesRef = useRef(schedules);
 
-  const selectedPrayerRef = useRef(selectedPrayer);
-
-  useEffect(() => {
-    selectedPrayerRef.current = selectedPrayer;
-  }, [selectedPrayer]);
-
   useEffect(() => {
     currentTimeRef.current = null;
     schedulesRef.current = schedules;
@@ -1011,12 +1005,6 @@ export default function MosqueApp() {
      fetchAssignments();
 
      checkReminders();
-
-     const newPrayer = getActivePrayerId(schedulesRef.current, now);
-
-     if (newPrayer !== selectedPrayerRef.current) {
-       setSelectedPrayer(newPrayer);
-     }
    };
 
     tick();
