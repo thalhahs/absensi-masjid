@@ -453,10 +453,9 @@ export default function PresensiView({
                   <button
                     onClick={async () => {
                       try {
-                        const foundOfficer = sortedOfficers.find(o => o.name === session?.name);
                         const result = await generateQrCode(
-                          foundOfficer?.name || session?.name || 'Unknown',
-                          foundOfficer?.id || null,
+                          officer.name,
+                          officer.id || null,
                           meta.scanRole,
                           currentSchedule
                         );
