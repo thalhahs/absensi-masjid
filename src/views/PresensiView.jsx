@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { parseTimeToMinutes, getDateMinutes } from '@/lib/attendance';
-import { Bell, X, Timer, QrCode, Crown, Shield, Check, User } from 'lucide-react';
+import { Bell, X, Timer, QrCode, Crown, Shield, Check, User, Scan } from 'lucide-react';
 import QrCodeModal from '@/components/QrCodeModal';
+import jsQR from 'jsqr';
 
 function getIqomahCountdown(adzanTime, prayerId, now) {
   if (!adzanTime || adzanTime === '--:--' || !prayerId || !now) {
@@ -81,6 +82,12 @@ export default function PresensiView({
   const [replacementOptions, setReplacementOptions] = useState([]);
   const [selectedReplacementId, setSelectedReplacementId] = useState('');
 
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanSuccess, setScanSuccess] = useState(false);
+  const videoRef = React.useRef(null);
+  const canvasRef = React.useRef(null);
+  const scanStreamRef = React.useRef(null);
+
   useEffect(() => {
     if (!prayerQr.token || !prayerQr.isActive) return;
 
@@ -131,6 +138,109 @@ export default function PresensiView({
       return () => clearTimeout(timer);
     }
   }, [qrSuccessNotification, setQrSuccessNotification]);
+
+  useEffect(() => {
+    if (!isScanning) return;
+
+    let animationFrameId;
+
+    const scanFrame = () => {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      if (video && canvas && video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'dontInvert',
+        });
+
+        if (code && code.data) {
+          handleScannedCode(code.data);
+          return;
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(scanFrame);
+    };
+
+    animationFrameId = requestAnimationFrame(scanFrame);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      if (scanStreamRef.current) {
+        scanStreamRef.current.getTracks().forEach((track) => track.stop());
+        scanStreamRef.current = null;
+      }
+    };
+  }, [isScanning]);
+
+  const handleScannedCode = async (data) => {
+    const tokenMatch = data.match(/\/approve\/([^?]+)/);
+    if (!tokenMatch) {
+      setScanError('QR code tidak valid');
+      return;
+    }
+
+    const token = tokenMatch[1];
+    stopScanning();
+    setScanError('');
+
+    try {
+      const res = await fetch('/api/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        setScanSuccess(true);
+        setTimeout(() => setScanSuccess(false), 3000);
+        suppressReminders(30000);
+        showError?.('Absensi berhasil');
+      } else {
+        setScanError(result.message || 'Gagal menyimpan absensi');
+      }
+    } catch (err) {
+      setScanError('Terjadi kesalahan jaringan');
+    }
+  };
+
+  const startScanning = async () => {
+    setScanError('');
+    setScanSuccess(false);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+      });
+
+      scanStreamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+
+      setIsScanning(true);
+    } catch (err) {
+      console.error('Camera error:', err);
+      setScanError('Gagal mengakses kamera');
+    }
+  };
+
+  const stopScanning = () => {
+    setIsScanning(false);
+    if (scanStreamRef.current) {
+      scanStreamRef.current.getTracks().forEach((track) => track.stop());
+      scanStreamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
 
   return (
     <>
@@ -370,6 +480,16 @@ export default function PresensiView({
                   </button>
                   </div>
                 )}
+
+                {!isSuperadmin && !canGenerateQR && officer.id === session?.officerId && meta.scanRole && (
+                  <button
+                    onClick={startScanning}
+                    className="gradient-brown text-white p-2.5 rounded-xl text-[10px] font-bold shadow-md hover:shadow-lg active:scale-95 transition-all"
+                    title="Scan QR"
+                  >
+                    <Scan size={18} />
+                  </button>
+                )}
               </div>
             );
           })}
@@ -384,6 +504,54 @@ export default function PresensiView({
         prayerTime={prayerQr.prayerTime}
         expiresAt={prayerQr.generatedAt ? new Date(prayerQr.generatedAt + 15 * 60 * 1000).toISOString() : null}
       />
+
+      {/* Scanner Modal for Officers */}
+      {isScanning && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-2xl border border-stone-200 dark:border-stone-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xs font-bold text-app-text dark:text-slate-100">
+                Scan QR Absensi
+              </h3>
+              <button
+                onClick={stopScanning}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="relative rounded-2xl overflow-hidden bg-black aspect-square mb-4">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-full h-full object-cover"
+              />
+              <canvas ref={canvasRef} className="hidden" />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-48 h-48 border-2 border-white/80 rounded-2xl" />
+              </div>
+            </div>
+
+            {scanError && (
+              <p className="text-[10px] text-rose-500 text-center mb-3">{scanError}</p>
+            )}
+
+            {scanSuccess && (
+              <p className="text-[10px] text-emerald-500 text-center mb-3">Absensi berhasil disimpan</p>
+            )}
+
+            <button
+              onClick={stopScanning}
+              className="w-full py-2.5 rounded-xl text-[10px] font-bold border border-stone-200 dark:border-stone-600 text-app-muted hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Replacement Modal */}
       {needsReplacement && (
