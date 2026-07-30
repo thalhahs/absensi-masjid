@@ -1621,7 +1621,7 @@ export default function MosqueApp() {
          </button>
        )}
 
-{isSuperadmin && (
+{(currentRole === "superadmin" || currentRole === "officer" || currentRole === "masjid") && (
          <button
            onClick={() => setCurrentView("jadwal")}
  
