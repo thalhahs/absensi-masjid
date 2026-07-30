@@ -1146,6 +1146,11 @@ export default function MosqueApp() {
   };
 
   const generateQrCode = async (officerName, officerId, role, schedule) => {
+    if (!isSuperadmin) {
+      showError("Hanya superadmin yang dapat membuat QR code");
+      return { success: false, message: "Hanya superadmin yang dapat membuat QR code" };
+    }
+
     const now = new Date();
     console.log('[QR] generateQrCode called', { officerName, officerId, role, scheduleTime: schedule?.time, scheduleId: schedule?.id, now: now.toISOString() });
 

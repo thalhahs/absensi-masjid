@@ -337,7 +337,7 @@ export default function PresensiView({
                   </div>
                 </div>
 
-                {meta.scanRole && !prayerQr.isActive && (
+                {isSuperadmin && meta.scanRole && !prayerQr.isActive && (
                   <div className="flex items-center gap-2">
                   <button
                     onClick={async () => {
