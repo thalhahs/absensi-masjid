@@ -90,20 +90,21 @@ function toLocalDateStr(date) {
   return `${year}-${month}-${day}`;
 }
 
-function getActivePrayerId(schedules, now, currentPrayerId = null, iqomahEndMinutes = null) {
+function getActivePrayerId(schedules, now) {
   const currentMinutes = getDateMinutes(now);
 
-  // Grace period: tetap di shalat yang sedang berjalan sampai 10 menit setelah iqomah berakhir
-  if (currentPrayerId && iqomahEndMinutes && currentMinutes <= iqomahEndMinutes + 10) {
-    const currentPrayer = schedules.find((s) => s.id === currentPrayerId);
-    if (currentPrayer && currentMinutes >= parseTimeToMinutes(currentPrayer.time)) {
-      return currentPrayerId;
-    }
-  }
-
-  for (const schedule of schedules) {
+  for (let i = 0; i < schedules.length; i++) {
+    const schedule = schedules[i];
     const prayerMinutes = parseTimeToMinutes(schedule.time);
+
     if (currentMinutes < prayerMinutes) {
+      return schedule.id;
+    }
+
+    const iqomahMinutes = schedule.id === 'subuh' ? 20 : 15;
+    const iqomahEndMinutes = prayerMinutes + iqomahMinutes;
+
+    if (currentMinutes <= iqomahEndMinutes + 5) {
       return schedule.id;
     }
   }
@@ -264,6 +265,12 @@ export default function MosqueApp() {
   const suppressRemindersUntilRef = useRef(0);
 
   const schedulesRef = useRef(schedules);
+
+  const selectedPrayerRef = useRef(selectedPrayer);
+
+  useEffect(() => {
+    selectedPrayerRef.current = selectedPrayer;
+  }, [selectedPrayer]);
 
   useEffect(() => {
     currentTimeRef.current = null;
@@ -991,19 +998,25 @@ export default function MosqueApp() {
   useEffect(() => {
     fetchOfficers();
 
-  const tick = () => {
-    const now = new Date();
+   const tick = () => {
+     const now = new Date();
 
-    setCurrentTime(now);
+     setCurrentTime(now);
 
-    const dateStr = toLocalDateStr(now);
+     const dateStr = toLocalDateStr(now);
 
-    fetchJadwal(dateStr);
+     fetchJadwal(dateStr);
 
-    fetchAssignments();
+     fetchAssignments();
 
-    checkReminders();
-  };
+     checkReminders();
+
+     const newPrayer = getActivePrayerId(schedulesRef.current, now);
+
+     if (newPrayer !== selectedPrayerRef.current) {
+       setSelectedPrayer(newPrayer);
+     }
+   };
 
     tick();
 
