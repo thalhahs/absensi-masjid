@@ -90,28 +90,51 @@ export default function JadwalView({
           Kelola Jadwal
         </h2>
 
-        <button
-          onClick={fetchAllAssignments}
-          className="
-            text-[10px]
-            bg-app-primary/10
-            text-app-primary
-            px-2
-            py-1
-            rounded-lg
-            font-bold
-            border
-            border-app-border
-            hover:bg-app-primary/20
-            dark:text-app-primary-light
-            dark:bg-app-primary/20
-            dark:border-slate-600
-            dark:hover:bg-app-primary/30
-            transition-colors
-          "
-        >
-          Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          {isSuperadmin && (
+            <button
+              onClick={() => setShowAddAssignmentForm(true)}
+              className="
+                text-[10px]
+                bg-app-primary
+                text-white
+                px-3
+                py-1
+                rounded-lg
+                font-bold
+                hover:bg-app-primary-dark
+                active:scale-95
+                transition-all
+                shadow-sm
+              "
+            >
+              + Tambah Jadwal
+            </button>
+          )}
+
+          <button
+            onClick={fetchAllAssignments}
+            className="
+              text-[10px]
+              bg-app-primary/10
+              text-app-primary
+              px-2
+              py-1
+              rounded-lg
+              font-bold
+              border
+              border-app-border
+              hover:bg-app-primary/20
+              dark:text-app-primary-light
+              dark:bg-app-primary/20
+              dark:border-slate-600
+              dark:hover:bg-app-primary/30
+              transition-colors
+            "
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       {isSuperadmin && showAddAssignmentForm && (
