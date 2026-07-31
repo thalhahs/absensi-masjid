@@ -55,7 +55,6 @@ export default function ProfileView({ history, officers, session, onLogout, isSu
   }, [isSuperadmin]);
 
   const hadir = myHistory.filter((item) => item.status === 'HADIR').length;
-  const terlambat = myHistory.filter((item) => item.status === 'TERLAMBAT').length;
   const alfa = myHistory.filter((item) => item.status === 'ALFA').length;
   const total = myHistory.length;
   const hadirRate = total > 0 ? Math.round((hadir / total) * 100) : 0;
@@ -63,7 +62,6 @@ export default function ProfileView({ history, officers, session, onLogout, isSu
   const getBadgeStyles = (status) => {
     const styles = {
       HADIR: "bg-gradient-to-r from-emerald-500 to-green-500 text-white border-0 shadow-md",
-      TERLAMBAT: "bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 shadow-md",
       ALFA: "bg-gradient-to-r from-rose-500 to-pink-500 text-white border-0 shadow-md",
     };
     return styles[status] || styles.HADIR;
@@ -119,16 +117,6 @@ export default function ProfileView({ history, officers, session, onLogout, isSu
             </p>
           </div>
 
-          <div className="bg-amber-50/80 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800/50 rounded-2xl p-3 text-center">
-            <Clock size={20} className="mx-auto text-amber-600 dark:text-amber-400 mb-1" />
-            <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-wider">
-              Terlambat
-            </p>
-            <p className="text-xl font-extrabold text-amber-700 dark:text-amber-300">
-              {terlambat}
-            </p>
-          </div>
-
           <div className="bg-rose-50/80 dark:bg-rose-900/30 border border-rose-100 dark:border-rose-800/50 rounded-2xl p-3 text-center">
             <XCircle size={20} className="mx-auto text-rose-600 dark:text-rose-400 mb-1" />
             <p className="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase tracking-wider">
@@ -178,7 +166,7 @@ export default function ProfileView({ history, officers, session, onLogout, isSu
                         {stat.name}
                       </p>
                       <p className="text-[10px] text-app-muted">
-                        Hadir: {stat.HADIR} · Terlambat: {stat.TERLAMBAT} · Alfa: {stat.ALFA}
+                        Hadir: {stat.HADIR} · Alfa: {stat.ALFA}
                       </p>
                     </div>
                     <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-app-primary/10 dark:bg-app-primary/20 text-app-primary border border-stone-200 dark:border-stone-700 ml-2">

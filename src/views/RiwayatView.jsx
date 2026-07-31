@@ -20,9 +20,7 @@ export default function RiwayatView({
   const getBadgeStyles = (status) => {
     const styles = {
       HADIR: "bg-gradient-to-r from-emerald-500 to-green-500 text-white border-0 shadow-md",
-      TERLAMBAT: "bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 shadow-md",
       ALFA: "bg-gradient-to-r from-rose-500 to-pink-500 text-white border-0 shadow-md",
-      SUKSES: "bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 shadow-md",
     };
     return styles[status] || styles.HADIR;
   };

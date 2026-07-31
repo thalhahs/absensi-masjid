@@ -36,6 +36,7 @@ export async function GET(request) {
       attendance_date: qrToken.attendance_date,
       used: qrToken.used,
       expires_at: qrToken.expires_at,
+      officer_id: qrToken.officer_id,
     },
   });
 }
@@ -94,13 +95,17 @@ export async function POST(request) {
     );
 
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const status =
-      currentMinutes <= windowEndMinutes ? "HADIR" : "TERLAMBAT";
+
+    if (currentMinutes > windowEndMinutes) {
+      return Response.json(
+        { success: false, message: "Scan di luar window waktu. Absen ditolak." },
+        { status: 400 }
+      );
+    }
 
     let officerName = qrToken.officer_name || "Unknown";
     let officerRole = qrToken.role || "Imam";
 
-    // If this is a replacement scan, look up the officer and check assignment
     if (officerId && replacement) {
       const { data: officerData, error: officerError } = await supabase
         .from("officers")
@@ -118,7 +123,6 @@ export async function POST(request) {
       officerName = officerData.name;
       officerRole = officerData.role || officerRole;
 
-      // Check if this officer is already assigned to this prayer
       const { data: assignment, error: assignmentError } = await supabase
         .from("schedule_assignments")
         .select("*")
@@ -128,7 +132,6 @@ export async function POST(request) {
         .single();
 
       if (assignmentError || !assignment) {
-        // Officer is not assigned - return options for replacement
         const { data: allAssignments, error: allAssignmentsError } = await supabase
           .from("schedule_assignments")
           .select("imam_id, muadzin_id, badal_imam_id")
@@ -170,12 +173,12 @@ export async function POST(request) {
       .from("attendance")
       .insert([
         {
-          officer_id: officerId || null,
+          officer_id: officerId || qrToken.officer_id || null,
           officer_name: officerName,
           role: officerRole,
           prayer: qrToken.prayer,
           prayer_time: qrToken.prayer_time,
-          status,
+          status: "HADIR",
           scan_time: scanTime,
           attendance_date: qrToken.attendance_date,
         },

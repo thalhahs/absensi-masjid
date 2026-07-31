@@ -454,7 +454,6 @@ export default function MosqueApp() {
             grouped[expected.officer_name] = {
               name: expected.officer_name,
               HADIR: 0,
-              TERLAMBAT: 0,
               ALFA: 0,
               total: 0,
             };
@@ -468,9 +467,7 @@ export default function MosqueApp() {
     const stats = Object.values(grouped).map((s) => ({
       ...s,
       hadirRate:
-        s.total > 0
-          ? Math.round(((s.HADIR + s.TERLAMBAT) / s.total) * 100)
-          : 0,
+        s.total > 0 ? Math.round((s.HADIR / s.total) * 100) : 0,
     }));
 
     setStatsData(stats);
@@ -1005,6 +1002,8 @@ export default function MosqueApp() {
      fetchAssignments();
 
      checkReminders();
+
+     checkAlfaGeneration();
    };
 
     tick();
@@ -1012,7 +1011,7 @@ export default function MosqueApp() {
     const timer = setInterval(tick, 1000);
 
     return () => clearInterval(timer);
-  }, [fetchOfficers, fetchJadwal, fetchAssignments, checkReminders]); // callbacks are stable via useCallback
+  }, [fetchOfficers, fetchJadwal, fetchAssignments, checkReminders, checkAlfaGeneration]); // callbacks are stable via useCallback
 
   useEffect(() => {
     if (!reminderNotification) return;
