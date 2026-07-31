@@ -559,6 +559,18 @@ export default function MosqueApp() {
     });
   }, [playReminderSound]); // stable: uses refs for data, playReminderSound is stable with [] deps
 
+  const checkAlfaGeneration = useCallback(async () => {
+    const now = new Date();
+
+    const dateStr = toLocalDateStr(now);
+
+    try {
+      await fetch(`/api/alfa?date=${dateStr}`);
+    } catch (error) {
+      console.error("ALFA GENERATION CHECK ERROR:", error);
+    }
+  }, []);
+
   // ===============================
   // AMBIL DATA PETUGAS
   // ===============================
