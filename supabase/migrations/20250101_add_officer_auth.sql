@@ -6,7 +6,7 @@
 
 -- 1. Auth fields on officers
 alter table public.officers
-  add column if not exists role text not null default 'officer' check (role in ('superadmin', 'officer'));
+  add column if not exists role text not null default 'officer' check (role in ('superadmin', 'officer', 'masjid'));
 
 alter table public.officers
   add column if not exists pin_hash text not null default '';
