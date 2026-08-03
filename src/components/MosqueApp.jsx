@@ -1606,7 +1606,7 @@ export default function MosqueApp() {
           <Fingerprint size={18} />
         </button>
 
-{(currentRole === 'superadmin' || currentRole === 'officer') && (
+{(currentRole === 'superadmin' || currentRole === 'officer' || currentRole === 'masjid') && (
          <button
            onClick={() => setCurrentView("riwayat")}
  

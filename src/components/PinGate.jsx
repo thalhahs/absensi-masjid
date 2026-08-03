@@ -181,7 +181,7 @@ export default function PinGate({ children }) {
                           {officer.name}
                         </p>
                         <p className="text-[10px] font-bold text-app-muted uppercase tracking-wider">
-                          {officer.role === 'superadmin' ? 'Superadmin' : 'Petugas'}
+                          {officer.role === 'superadmin' ? 'Superadmin' : officer.role === 'masjid' ? 'Masjid' : 'Petugas'}
                         </p>
                       </div>
                     </button>
